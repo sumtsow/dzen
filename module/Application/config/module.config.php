@@ -9,7 +9,7 @@ namespace Application;
 
 use Zend\Router\Http\Literal;
 use Zend\Router\Http\Segment;
-use Zend\ServiceManager\Factory\InvokableFactory;
+//use Zend\ServiceManager\Factory\InvokableFactory;
 
 return [
     'router' => [
@@ -36,11 +36,11 @@ return [
             ],
         ],
     ],
-    'controllers' => [
+    /*'controllers' => [
         'factories' => [
             Controller\IndexController::class => InvokableFactory::class,
         ],
-    ],
+    ],*/
     'view_manager' => [
         'display_not_found_reason' => true,
         'display_exceptions'       => true,
