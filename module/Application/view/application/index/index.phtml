@@ -1,28 +1,39 @@
-<div class="jumbotron">
+<div class="jumbotron mt-5">
     <h1>Welcome to <span class="zf-green">Dzen Code Guestbook!</span></h1>
     <p>
-        Congratulations! You have successfully installed the ZF Skeleton Application.
-        You are currently running Zend Framework.
-        This skeleton can serve as a simple starting point for you to begin
-        building your application on ZF.
+        Great! We successfully completed the task.
+        Now you can validate it.
     </p>
     <p><a class="btn btn-success btn-lg" href="https://github.com/sumtsow/dzen" target="_blank">Fork Dzen Code Guestbook on GitHub &raquo;</a></p>
 </div>
-
-<?php foreach ($comments as $comment) : ?>
 <div class="row">
-    <div class="col-md-4">
-        <div class="panel panel-default">
+    <div class="col">
+    <?php outRecusively($comments); ?>
+    </div>
+</div>
+<p>
+    <a class="btn btn-success my-3" href="<?php /*echo $this->url('comment', ['action' => 'add'])*/ ?>">Add new comment &raquo;</a>
+</p>
+
+<?php
+    function outRecusively($comments) {
+    foreach($comments as $comment) :
+?>
+        <div class="panel panel-default mx-3">
             <div class="panel-heading">
-                <h3 class="panel-title"><?= $comment->user_name; ?></h3>
+                <h3 class="panel-title"><span class="font-weight-bold"><?= $comment->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%m ", strtotime($comment->created_at))); ?></h3>
             </div>
             <div class="panel-body">
                 <p><?= $comment->text; ?></p>
+                <p><a class="btn btn-success float-right" href="<?php /*echo $this->url('comment', ['action' => 'add'])*/ ?>">Answer &raquo;</a></p>
             </div>
+<?php
+        if ($comment->children) :
+            outRecusively($comment->children);
+?>
         </div>
     </div>
-</div>
-<?php endforeach; ?>
-<p>
-    <a href="<?php /*echo $this->url('comment', ['action' => 'add'])*/ ?>">Add new comment</a>
-</p>
+<?php
+        endif;
+    endforeach; 
+}

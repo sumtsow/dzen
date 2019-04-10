@@ -4,6 +4,7 @@ namespace Application\Model;
 
 use RuntimeException;
 use Zend\Db\TableGateway\TableGatewayInterface;
+use Application\Model\Comment;
 
 class CommentTable
 {
@@ -17,6 +18,40 @@ class CommentTable
     public function fetchAll()
     {
         return $this->tableGateway->select();
+    }
+    
+    // return array of children comments for comment with $id
+    // so, if $id = 0 or not defined, return top level comments array
+    public function fetchChildren($id = 0)
+    {
+        $resultSet = $this->tableGateway->select(['parent' => $id]);
+        $resultArr = false;
+        if($resultSet) {
+            foreach($resultSet as $result) {
+                $resultArr[] = $result;
+            }
+        }
+        return $resultArr;
+    } 
+    
+    public function hasChildren($id = 0)
+    {
+        return (count(self::fetchChildren($id))) ? true : false;
+    }
+    
+    public function getHierarchy($id = 0)
+    {
+        $result = false;
+        $comments = $this->fetchChildren($id);
+        if($comments) {
+            foreach($comments as $comment) {
+                if(self::hasChildren($comment->id)) {
+                    $comment->children = self::getHierarchy($comment->id);
+                }
+                $result[] = $comment;
+            }
+        }
+        return $result;
     }
     
     public function getComment($id)

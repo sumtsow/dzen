@@ -22,9 +22,9 @@ class IndexController extends AbstractActionController
     
     public function indexAction()
     {
-        
+        $comments = $this->table->getHierarchy();
         return new ViewModel([
-            'comments' => $this->table->fetchAll(),
+            'comments' => $comments,
         ]);
     }
 

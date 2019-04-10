@@ -8,6 +8,10 @@
 return [
     // Additional modules to include when in development mode
     'modules' => [
+        'Zend\InputFilter',
+        'Zend\Filter',
+        'Zend\Hydrator',
+        'Zend\I18n',
         'Zend\ServiceManager\Di',
         'Zend\Session',
         'Zend\Mvc\Plugin\Prg',
