@@ -27,20 +27,20 @@ return [
             'application' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '/application[/:action]',
+                    'route'    => '[/:action[/:id]][/]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id'     => '[0-9]+',
+                    ],
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'index',
+                        'id'     => '',
                     ],
                 ],
             ],
         ],
     ],
-    /*'controllers' => [
-        'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
-        ],
-    ],*/
     'view_manager' => [
         'display_not_found_reason' => true,
         'display_exceptions'       => true,

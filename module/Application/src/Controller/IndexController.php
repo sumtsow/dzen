@@ -7,7 +7,9 @@
 
 namespace Application\Controller;
 
+use Application\Model\Comment;
 use Application\Model\CommentTable;
+use Application\Form\CommentForm;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
@@ -23,9 +25,31 @@ class IndexController extends AbstractActionController
     public function indexAction()
     {
         $comments = $this->table->getHierarchy();
+        $form = new CommentForm();
         return new ViewModel([
             'comments' => $comments,
+            'form' => $form,
         ]);
     }
+    
+    public function addAction()
+    {
+        $form = new CommentForm();
+        $request = $this->getRequest();
+        if (!$request->isPost()) {
+            return $this->redirect()->toRoute('/home');
+        }
 
+        $comment = new Comment();
+        $form->setInputFilter($comment->getInputFilter());
+        $form->setData($request->getPost());
+        if (!$form->isValid()) {
+            return $this->redirect()->toRoute('/home');
+        }
+
+        $comment->exchangeArray($form->getData());
+        $this->table->saveComment($comment);
+        return $this->redirect()->toRoute('/home');
+    }
+    
 }

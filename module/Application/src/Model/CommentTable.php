@@ -36,7 +36,7 @@ class CommentTable
     
     public function hasChildren($id = 0)
     {
-        return (count(self::fetchChildren($id))) ? true : false;
+        return (self::fetchChildren($id)) ? true : false;
     }
     
     public function getHierarchy($id = 0)
@@ -77,7 +77,6 @@ class CommentTable
             'home_page' => $comment->home_page,
             'text'  => $comment->text,
             'created_at' => $comment->created_at,
-            'updated_at'  => $comment->updated_at,            
         ];
 
         $id = (int) $comment->id;
