@@ -11,9 +11,6 @@
     <?php outRecusively($comments); ?>
     </div>
 </div>
-<p>
-    <a class="btn btn-success my-3" href="<?php /*echo $this->url('comment', ['action' => 'add'])*/ ?>">Add new comment &raquo;</a>
-</p>
 
 <?php
     function outRecusively($comments) {
@@ -30,52 +27,109 @@
 <?php
         if ($comment->children) :
             outRecusively($comment->children);
+        endif;        
 ?>
         </div>
 <?php
-        endif;
     endforeach;
 }
+$user_name = $form->get('user_name');
+$user_name->setAttributes(['class' => 'form-control', 'id' => 'user_name']);
+$email = $form->get('email');
+$email->setAttributes(['class' => 'form-control', 'id' => 'email']);
+$home_page = $form->get('home_page');
+$home_page->setAttributes(['class' => 'form-control', 'id' => 'home_page']);
+$text = $form->get('text');
+$text->setAttributes(['class' => 'form-control mh-100', 'id' => 'text']);
 $form->prepare(); 
 ?>
 
-<div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="comment" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="comment"></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <?= $this->form()->openTag($form); ?>  
-      <div class="modal-body">
-        <?= $this->formHidden($form->get('csrf')); ?>  
-        <?= $this->formHidden($form->get('parent')->setAttribute('id', 'parent')); ?>  
-          <div class="form-group">
-            <?= $this->formRow($form->get('user_name')->setAttributes(['class' => 'form-control', 'id' => 'user_name'])); ?>
-          </div>
-          
-          <div class="form-group">
-            <?= $this->formRow($form->get('email')->setAttributes(['class' => 'form-control', 'id' => 'email'])); ?>
-          </div>
+        <div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="comment" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="comment_header"></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    
+                    <?= $this->form()->openTag($form); ?>  
+                    <div class="modal-body">
+                        <?= $this->formHidden($form->get('csrf')); ?>  
+                        <?= $this->formHidden($form->get('parent')->setAttribute('id', 'parent')); ?>  
+                  
+                        <div class="form-group">
+                            <?= $this->formLabel($user_name) ?>
+                            <?= $this->formElement($user_name) ?>
+                            <?= $this->formElementErrors()->render($user_name, ['class' => 'help-block']) ?>
+                        </div>
+         
+                        <div class="form-group">
+                            <?= $this->formLabel($email) ?>
+                            <?= $this->formElement($email) ?>
+                            <?= $this->formElementErrors()->render($email, ['class' => 'help-block']) ?> 
+                        </div>
 
-          <div class="form-group">
-            <?= $this->formRow($form->get('home_page')->setAttributes(['class' => 'form-control', 'id' => 'home_page'])); ?>
-          </div>
+                        <div class="form-group">
+                            <?= $this->formLabel($home_page) ?>
+                            <?= $this->formElement($home_page) ?>
+                            <?= $this->formElementErrors()->render($home_page, ['class' => 'help-block']) ?>
+                        </div>
           
-          <div class="form-group">
-            <?= $this->formRow($form->get('text')->setAttributes(['class' => 'form-control', 'id' => 'text'])); ?>
-          </div>
-      </div>
-      <div class="modal-footer">
-        <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-      </div>
-      <?= $this->form()->closeTag(); ?> 
-    </div>
-  </div>
-</div>
+                        <div class="form-group">
+                            <?= $this->formLabel($text) ?>
+                            <?= $this->formElement($text) ?>
+                            <?= $this->formElementErrors()->render($text, ['class' => 'help-block']) ?>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                    <?= $this->form()->closeTag(); ?> 
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default mx-3">
+            <?= $this->form()->openTag($form); ?>            
+            <div class="panel-heading">
+                <p class="h2">Add new comment</p>
+            </div>
+            <div class="panel-body">
+            <?= $this->formHidden($form->get('csrf')); ?>  
+            <?= $this->formHidden($form->get('parent')->setAttribute('id', 'parent')); ?>  
+          
+                <div class="form-group">
+                    <?= $this->formLabel($user_name) ?>
+                    <?= $this->formElement($user_name) ?>
+                    <?= $this->formElementErrors()->render($user_name, ['class' => 'help-block']) ?>
+                </div>
+         
+                <div class="form-group">
+                    <?= $this->formLabel($email) ?>
+                    <?= $this->formElement($email) ?>
+                    <?= $this->formElementErrors()->render($email, ['class' => 'help-block']) ?> 
+                </div>
+
+                <div class="form-group">
+                    <?= $this->formLabel($home_page) ?>
+                    <?= $this->formElement($home_page) ?>
+                    <?= $this->formElementErrors()->render($home_page, ['class' => 'help-block']) ?>             
+                </div>
+          
+                <div class="form-group">
+                    <?= $this->formLabel($text) ?>
+                    <?= $this->formElement($text) ?>
+                    <?= $this->formElementErrors()->render($text, ['class' => 'help-block']) ?>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
+            <?= $this->form()->closeTag(); ?>
+            </div>
+        </div>   
 
 <?= $this->inlineScript()
 ->prependFile($this->basePath('js/modal.js'))

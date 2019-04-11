@@ -24,10 +24,10 @@ class IndexController extends AbstractActionController
     
     public function indexAction()
     {
-        $comments = $this->table->getHierarchy();
+        //$form = ($this->params()->fromRoute('form')) ? $this->params()->fromRoute('form') : new CommentForm();
         $form = new CommentForm();
         return new ViewModel([
-            'comments' => $comments,
+            'comments' => $this->table->getHierarchy(),
             'form' => $form,
         ]);
     }
@@ -37,19 +37,19 @@ class IndexController extends AbstractActionController
         $form = new CommentForm();
         $request = $this->getRequest();
         if (!$request->isPost()) {
-            return $this->redirect()->toRoute('/home');
+            return $this->redirect()->toRoute('home');
         }
 
         $comment = new Comment();
         $form->setInputFilter($comment->getInputFilter());
         $form->setData($request->getPost());
         if (!$form->isValid()) {
-            return $this->redirect()->toRoute('/home');
+            return $this->redirect()->toRoute('home', ['form' => $form]);
         }
 
         $comment->exchangeArray($form->getData());
         $this->table->saveComment($comment);
-        return $this->redirect()->toRoute('/home');
+        return $this->redirect()->toRoute('home');
     }
     
 }

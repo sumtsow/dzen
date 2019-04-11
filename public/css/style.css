@@ -35,3 +35,11 @@ div.container a.navbar-brand > img {
 .navbar > .container, .navbar > .container-fluid {
     display: block;
 }
+
+.modal-dialog {
+    max-width: 800px;
+}
+
+textarea.form-control {
+    height: 200px;
+}

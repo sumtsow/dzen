@@ -20,7 +20,6 @@ class Comment implements InputFilterAwareInterface
 	public $text;
 	public $parent;
         public $created_at;
-        public $updated_at;
         
         public $children;
 
@@ -35,7 +34,7 @@ class Comment implements InputFilterAwareInterface
         $this->home_page    = !empty($data['home_page']) ? $data['home_page'] : null;
         $this->text         = !empty($data['text']) ? $data['text'] : null;
         $this->parent       = !empty($data['parent']) ? $data['parent'] : 0;
-        $this->created_at   = !empty($data['parent']) ? $data['parent'] : date("Y-m-d H:i:s");      
+        $this->created_at   = !empty($data['created_at']) ? $data['created_at'] : date("Y-m-d H:i:s");      
     }
     
     public function setInputFilter(InputFilterInterface $inputFilter)

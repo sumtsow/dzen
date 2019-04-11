@@ -76,6 +76,7 @@ class CommentTable
             'email'  => $comment->email,
             'home_page' => $comment->home_page,
             'text'  => $comment->text,
+            'parent'  => (int) $comment->parent,
             'created_at' => $comment->created_at,
         ];
 
