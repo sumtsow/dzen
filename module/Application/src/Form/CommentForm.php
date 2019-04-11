@@ -4,7 +4,6 @@ namespace Application\Form;
 
 use Zend\Form\Form;
 use Zend\Form\Element;
-use Zend\Form\Element\Csrf;
 
 class CommentForm extends Form
 {
@@ -28,6 +27,7 @@ class CommentForm extends Form
         ]);*/
         $this->add([
             'name' => 'user_name',
+            'id' => 'user_name',
             'type' => 'text',
             'options' => [
                 'label' => 'User Name',
@@ -59,6 +59,13 @@ class CommentForm extends Form
             'type' => 'text',
             'options' => [
                 'label' => 'User IP',
+            ],
+        ]);
+        $this->add([
+            'name' => 'user_agent',
+            'type' => 'text',
+            'options' => [
+                'label' => 'User Agent',
             ],
         ]);
         $this->add([

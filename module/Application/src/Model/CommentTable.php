@@ -39,6 +39,7 @@ class CommentTable
         return (self::fetchChildren($id)) ? true : false;
     }
     
+    //return comments as multidimentional array - parent[children][children]...
     public function getHierarchy($id = 0)
     {
         $result = false;
@@ -73,6 +74,7 @@ class CommentTable
             'id' => $comment->id,
             'user_name'  => $comment->user_name,
             'user_ip' => $comment->user_ip,
+            'user_agent' => $comment->user_agent,
             'email'  => $comment->email,
             'home_page' => $comment->home_page,
             'text'  => $comment->text,
