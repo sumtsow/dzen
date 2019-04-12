@@ -55,14 +55,6 @@ class Comment implements InputFilterAwareInterface
 
         $inputFilter = new InputFilter();
 
-        /*$inputFilter->add([
-            'name' => 'id',
-            'required' => false,
-            'filters' => [
-                ['name' => ToInt::class],
-            ],
-        ]);*/
-
         $inputFilter->add([
             'name' => 'user_name',
             'required' => true,
@@ -92,12 +84,14 @@ class Comment implements InputFilterAwareInterface
             'validators' => [
                 [
                     'name' => StringLength::class,
+
                     'options' => [
                         'encoding' => 'UTF-8',
                         'min' => 5,
                         'max' => 128,
                     ],
                 ],
+                ['type' => 'EmailAddress'],                
             ],
         ]);
 
@@ -117,6 +111,7 @@ class Comment implements InputFilterAwareInterface
                         'max' => 128,
                     ],
                 ],
+                ['type' => 'uri'],                
             ],
         ]);
 
