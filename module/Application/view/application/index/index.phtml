@@ -22,7 +22,7 @@
             </div>
             <div class="panel-body">
                 <p><?= $comment->text; ?></p>
-                <p><button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#comment" data-whatever="<?= $comment->id; ?>">Answer &raquo;</button></p>
+                <p><button id="answer_to<?= $comment->id; ?>" type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#comment" data-whatever="<?= $comment->id; ?>">Answer &raquo;</button></p>
             </div>
 <?php
         if ($comment->children) :
@@ -36,15 +36,14 @@
 
 $inputs = [
     'user_name' => $form->get('user_name'),
-    'email' => $form->get('email'),
+    'email'     => $form->get('email'),
     'home_page' => $form->get('home_page'),
-    'text' => $form->get('text'),
+    'text'      => $form->get('text'),
 ];
 foreach($inputs as $input) {
     $input->setAttribute('class', 'form-control');
 }
-$error_input = key($form->getMessages());
-$form->prepare(); 
+$form->prepare();
 ?>
 
         <div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="comment" aria-hidden="true">
@@ -104,9 +103,17 @@ $form->prepare();
             </div>
         </div>   
 
-<?= $this->inlineScript()
-->prependFile($this->basePath('js/modal.js'));
-if($error_input) :
-?>
-<script>document.forms[1].<?= $error_input; ?>.focus(); window.scrollBy(0, 600);</script>
+<?= $this->inlineScript()->prependFile($this->basePath('js/modal.js')); ?>
+
+<?php if(isset($error_input) && $error_input['parent'] == 0) : ?>
+
+<script>
+    document.forms[1].<?= $error_input['field']; ?>.focus();
+    window.scrollBy(0, 600);
+</script>
+
+<?php elseif(isset($error_input) && $error_input['parent'] > 0) : ?>
+
+<script>$('#answer_to<?= $error_input['parent'] ?>').click();</script>
+
 <?php endif;

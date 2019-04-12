@@ -45,6 +45,10 @@ class IndexController extends AbstractActionController
             return ([
                 'comments' => $this->table->getHierarchy(),
                 'form' => $form,
+                'error_input' => [
+                    'field' => key($form->getMessages()),
+                    'parent' => $request->getPost('parent'),
+                ]
             ]);
         }
 

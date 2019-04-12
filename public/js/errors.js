@@ -1,2 +1,1 @@
-//$('#newComment form').focus();
 
