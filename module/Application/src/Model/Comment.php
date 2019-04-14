@@ -4,11 +4,13 @@ namespace Application\Model;
 use DomainException;
 use Zend\Filter\StringTrim;
 use Zend\Filter\StripTags;
-use Zend\Filter\ToInt;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\Validator\StringLength;
+use Zend\Validator\EmailAddress;
+use Zend\Validator\Uri;
+use Zend\Validator\Regex;
 
 class Comment implements InputFilterAwareInterface
 {
@@ -71,6 +73,10 @@ class Comment implements InputFilterAwareInterface
                         'max' => 128,
                     ],
                 ],
+                [
+                    'name' => Regex::class,
+                    'options' => ['pattern' => '/^[a-zA-Z\d]+$/'],
+                ],                
             ],
         ]);
 
@@ -91,7 +97,10 @@ class Comment implements InputFilterAwareInterface
                         'max' => 128,
                     ],
                 ],
-                ['type' => 'EmailAddress'],                
+                [
+                    'name' => EmailAddress::class,
+                    'type' => 'EmailAddress',
+                ],          
             ],
         ]);
 
@@ -111,7 +120,10 @@ class Comment implements InputFilterAwareInterface
                         'max' => 128,
                     ],
                 ],
-                ['type' => 'uri'],                
+                [
+                    'name' => Uri::class,
+                    'type' => 'uri',
+                ],                
             ],
         ]);
 

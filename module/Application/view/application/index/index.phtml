@@ -1,3 +1,6 @@
+<?php
+$comments = $this->paginator;
+?>
 <div class="jumbotron mt-5">
     <h1>Welcome to <span class="zf-green">Dzen Code Guestbook!</span></h1>
     <p>
@@ -6,39 +9,52 @@
     </p>
     <p><a class="btn btn-success btn-lg" href="https://github.com/sumtsow/dzen" target="_blank">Fork Dzen Code Guestbook on GitHub &raquo;</a></p>
 </div>
+
+<div class="row">
+    <div class="col text-center">
+<?= $this->paginationControl($comments,
+     'Sliding',
+     'application/index/page.phtml', [
+         'id' => $this->id,
+         'sort' => $sort,
+         'order' => $order,
+     ]); ?>
+    </div>
+</div>
+
 <div class="row">
     <div class="col">
-    <?php outRecusively($comments); ?>
+        <h2>Posts:</h2>
+        <table class="table table-striped">
+            <thead class="justify-content-center">
+                <tr>
+                    <th scope="col" class="text-center"><a href="/switch?sort=user_name&order=<?= $order ?>">User Name</a></th>
+                    <th scope="col" class="text-center"><a href="/switch?sort=created_at&order=<?= $order ?>">Date & Time</a></th>
+                    <th scope="col" class="text-center">Text</th>
+                    <th scope="col" class="text-center"><a href="/switch?sort=email&order=<?= $order ?>">E-mail</a></th>                
+                </tr>
+            </thead>
+            <tbody>
+            <?php foreach($comments as $comment) : ?>
+                <tr>
+                    <th scope="row"><a href="<?= $this->url('application', ['action' => 'view', 'id' => $comment->id]) ?>"><?= $comment->user_name; ?></a></td>
+                    <td><?= strftime('%d.%m.%Y %X ', strtotime($comment->created_at)); ?></td>
+                    <td><?= $comment->text; ?></td>
+                    <td><a href="mailto://<?= $comment->email; ?>"><?= $comment->email; ?></a></td>                
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 </div>
 
 <?php
-    function outRecusively($comments) {
-    foreach($comments as $comment) :
-?>
-        <div class="panel panel-default mx-3">
-            <div class="panel-heading">
-                <h3 class="panel-title"><span class="font-weight-bold"><?= $comment->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($comment->created_at))); ?></h3>
-            </div>
-            <div class="panel-body">
-                <p><?= $comment->text; ?></p>
-                <p><button id="answer_to<?= $comment->id; ?>" type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#comment" data-whatever="<?= $comment->id; ?>">Answer &raquo;</button></p>
-            </div>
-<?php
-        if ($comment->children) :
-            outRecusively($comment->children);
-        endif;        
-?>
-        </div>
-<?php
-    endforeach;
-}
-
 $inputs = [
     'user_name' => $form->get('user_name'),
     'email'     => $form->get('email'),
     'home_page' => $form->get('home_page'),
     'text'      => $form->get('text'),
+    'captcha'   => $form->get('captcha'),
 ];
 foreach($inputs as $input) {
     $input->setAttribute('class', 'form-control');
@@ -46,74 +62,47 @@ foreach($inputs as $input) {
 $form->prepare();
 ?>
 
-        <div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="comment" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="comment_header"></h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    
-                    <?= $this->form()->openTag($form); ?>  
-                    <div class="modal-body">
-                        <?= $this->formHidden($form->get('csrf')); ?>  
-                        <?= $this->formHidden($form->get('parent')->setAttribute('id', 'parent')); ?>  
-                        
-                        <?php foreach($inputs as $key => $input) : ?>
-                        <div class="form-group">
-                            <?= $this->formLabel($input) ?>
-                            <?= $this->formElement($input) ?>
-                            <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
-                        </div>
-                        <?php endforeach; ?>
-                        
-                    </div>
-                    <div class="modal-footer">
-                        <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </div>
-                    <?= $this->form()->closeTag(); ?> 
-                </div>
-            </div>
-        </div>
+<div class="row">
+    <div class="col text-center">
+<?= $this->paginationControl($comments,
+     'Sliding',
+     'application/index/page.phtml', [
+         'id' => $this->id,
+         'sort' => $sort,
+         'order' => $order,
+     ]); ?>
+    </div>
+</div>
 
-        <div class="panel panel-default mx-3" id="newComment">
-            <?= $this->form()->openTag($form); ?>            
-            <div class="panel-heading">
-                <p class="h2">Add new comment</p>
-            </div>
-            <div class="panel-body">
-            <?= $this->formHidden($form->get('csrf')); ?>  
-            <?= $this->formHidden($form->get('parent')->setAttribute('id', 'parent')); ?>  
+<div class="panel panel-default mx-3" id="newComment">
+<?= $this->form()->openTag($form); ?>            
+    <div class="panel-heading">
+        <p class="h2">Add new comment</p>
+    </div>
+    <div class="panel-body">
+        <?= $this->formHidden($form->get('csrf')); ?>  
+        <?= $this->formHidden($form->get('parent')->setAttribute('id', 'parent')); ?>  
                 
-            <?php foreach($inputs as $input) : ?>
-                <div class="form-group">
-                    <?= $this->formLabel($input) ?>
-                    <?= $this->formElement($input) ?>
-                    <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
-                </div>          
-            <?php endforeach; ?>
+        <?php foreach($inputs as $input) : ?>
+        <div class="form-group">
+            <?= $this->formLabel($input) ?>
+            <?= $this->formElement($input) ?>
+            <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+        </div>          
+        <?php endforeach; ?>
 
-            </div>
-            <div class="panel-footer">
-                <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
-            <?= $this->form()->closeTag(); ?>
-            </div>
-        </div>   
+    </div>
+    <div class="panel-footer">
+        <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
+        <?= $this->form()->closeTag(); ?>
+    </div>
+</div>   
 
-<?= $this->inlineScript()->prependFile($this->basePath('js/modal.js')); ?>
-
-<?php if(isset($error_input) && $error_input['parent'] == 0) : ?>
+<?php if(isset($error_input)) : ?>
 
 <script>
-    document.forms[1].<?= $error_input['field']; ?>.focus();
-    window.scrollBy(0, 600);
+    document.forms[0].<?= $error_input['field']; ?>.focus();
+    window.scrollBy(0, 500);
 </script>
-
-<?php elseif(isset($error_input) && $error_input['parent'] > 0) : ?>
-
-<script>$('#answer_to<?= $error_input['parent'] ?>').click();</script>
 
 <?php endif;

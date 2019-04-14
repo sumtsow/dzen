@@ -27,15 +27,17 @@ return [
             'application' => [
                 'type'    => Segment::class,
                 'options' => [
-                    'route'    => '[/:action[/:id]][/]',
+                    'route'    => '[/:action[/:id]][/:page][/]',
                     'constraints' => [
                         'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'id'     => '[0-9]+',
+                        'page'     => '[0-9]+',
                     ],
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'index',
                         'id'     => '',
+                        'page'     => '',
                     ],
                 ],
             ],

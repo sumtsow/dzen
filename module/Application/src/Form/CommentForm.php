@@ -4,6 +4,7 @@ namespace Application\Form;
 
 use Zend\Form\Form;
 use Zend\Form\Element;
+use Zend\Captcha;
 
 class CommentForm extends Form
 {
@@ -20,11 +21,7 @@ class CommentForm extends Form
                 ],
             ],
         ]);
-        /*$this->add([
-            'name' => 'id',
-            'type' => 'hidden',
-            'value' => 0,
-        ]);*/
+        
         $this->add([
             'name' => 'user_name',
             'id' => 'user_name',
@@ -33,6 +30,7 @@ class CommentForm extends Form
                 'label' => 'User Name',
             ],
         ]);
+        
         $this->add([
             'name' => 'email',            
             'type' => Element\Email::class,
@@ -40,6 +38,7 @@ class CommentForm extends Form
                 'label' => 'E-mail',
             ],
         ]);
+        
         $this->add([
             'name' => 'home_page',
             'type' => Element\Url::class,
@@ -47,6 +46,7 @@ class CommentForm extends Form
                 'label' => 'Home Page',
             ],
         ]);
+        
         $this->add([
             'name' => 'text',
             'type' => 'textarea',
@@ -54,6 +54,7 @@ class CommentForm extends Form
                 'label' => 'Text',
             ],
         ]);
+        
         $this->add([
             'name' => 'user_ip',
             'type' => 'text',
@@ -61,6 +62,7 @@ class CommentForm extends Form
                 'label' => 'User IP',
             ],
         ]);
+        
         $this->add([
             'name' => 'user_agent',
             'type' => 'text',
@@ -68,10 +70,12 @@ class CommentForm extends Form
                 'label' => 'User Agent',
             ],
         ]);
+        
         $this->add([
             'name' => 'parent',
             'type' => 'hidden',
-        ]);        
+        ]);  
+        
         $this->add([
             'name' => 'created_at',
             'type' => Element\DateTime::class,
@@ -79,12 +83,17 @@ class CommentForm extends Form
                 'label' => 'Date/Time',
                 'format' => 'Y-m-d\TH:iP',
             ],
-            'attributes' => [
-                //'min' => '2019-01-01T00:00:00Z',
-                //'max' => '2019-12-31T00:00:00Z',
-                //'step' => '1',
-            ],
         ]);
+        
+        $this->add([
+            'name' => 'captcha',
+            'type' => 'Zend\Form\Element\Captcha',
+            'options' => [
+                'label' => 'Captcha',
+                'captcha' => new Captcha\Dumb(),
+            ],
+        ]); 
+        
         $this->add([
             'id' => 'submitbutton',
             'type' => 'submit',

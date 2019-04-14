@@ -3,6 +3,7 @@
 namespace Application\Model;
 
 use RuntimeException;
+use Zend\Db\Sql\Select;
 use Zend\Db\TableGateway\TableGatewayInterface;
 use Application\Model\Comment;
 
@@ -22,9 +23,11 @@ class CommentTable
     
     // return array of children comments for comment with $id
     // so, if $id = 0 or not defined, return top level comments array
-    public function fetchChildren($id = 0)
+    public function fetchChildren($id = '0', $sort = 'created_at', $order = 'DESC')
     {
-        $resultSet = $this->tableGateway->select(['parent' => $id]);
+        $select = new Select();
+        $select->from('comments')->where("parent = '$id'")->order($sort.' '.$order);
+        $resultSet = $this->tableGateway->selectWith($select);
         $resultArr = false;
         if($resultSet) {
             foreach($resultSet as $result) {
@@ -34,20 +37,20 @@ class CommentTable
         return $resultArr;
     } 
     
-    public function hasChildren($id = 0)
+    public function hasChildren($id = '0')
     {
         return (self::fetchChildren($id)) ? true : false;
     }
     
     //return comments as multidimentional array - parent[children][children]...
-    public function getHierarchy($id = 0)
+    public function getHierarchy($id = '0', $sort = 'created_at', $order = 'DESC')
     {
         $result = false;
-        $comments = $this->fetchChildren($id);
+        $comments = $this->fetchChildren($id, $sort, $order);
         if($comments) {
             foreach($comments as $comment) {
                 if(self::hasChildren($comment->id)) {
-                    $comment->children = self::getHierarchy($comment->id);
+                    $comment->children = self::getHierarchy($comment->id, $sort, $order);
                 }
                 $result[] = $comment;
             }
@@ -57,15 +60,15 @@ class CommentTable
     
     public function getComment($id)
     {
-        $id = (int) $id;
         $rowset = $this->tableGateway->select(['id' => $id]);
-        $row = $rowset->current();
+        $row = $this->tableGateway->select(['id' => $id])->current();
         if (! $row) {
             throw new RuntimeException(sprintf(
                 'Could not find row with identifier %d',
                 $id
             ));
         }
+        return $row;
     }
 
     public function saveComment(Comment $comment)

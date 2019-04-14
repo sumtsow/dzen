@@ -1,0 +1,123 @@
+<div class="row mt-3">
+    <div class="col">
+        <div class="panel panel-default mx-3">
+            <div class="panel-heading">
+                <h3 class="panel-title"><span class="font-weight-bold"><?= $parent->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($parent->created_at))); ?></h3>
+            </div>
+            <div class="panel-body">
+                <?= $parent->text; ?>
+            </div>
+        </div>
+        <h2 class="ml-3">Answers:</h2>
+        <?php outRecusively($comments); ?>
+    </div>
+</div>
+
+<?php
+    function outRecusively($comments) {
+        if($comments) :
+            foreach($comments as $comment) :
+?>
+                <div class="panel panel-default mx-3">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><span class="font-weight-bold"><?= $comment->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($comment->created_at))); ?></h3>
+                    </div>
+                    <div class="panel-body">
+                        <p><?= $comment->text; ?></p>
+                        <p><button id="answer_to<?= $comment->id; ?>" type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#comment" data-whatever="<?= $comment->id; ?>">Answer &raquo;</button></p>
+                    </div>
+<?php
+                if ($comment->children) :
+                    outRecusively($comment->children);
+                endif;        
+?>
+                </div>
+<?php
+            endforeach;
+        endif;
+    }
+
+    $inputs = [
+        'user_name' => $form->get('user_name'),
+        'email'     => $form->get('email'),
+        'home_page' => $form->get('home_page'),
+        'text'      => $form->get('text'),
+        'captcha'   => $form->get('captcha'),
+    ];
+    foreach($inputs as $input) {
+        $input->setAttribute('class', 'form-control');
+    }
+    $form->prepare();
+?>
+
+        <div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="comment" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="comment_header"></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    
+                    <?= $this->form()->openTag($form); ?>  
+                    <div class="modal-body">
+                        <?= $this->formHidden($form->get('csrf')); ?>  
+                        <?= $this->formHidden($form->get('parent')->setAttribute('id', 'parent')); ?>  
+                        
+                        <?php foreach($inputs as $key => $input) : ?>
+                        <div class="form-group">
+                            <?= $this->formLabel($input) ?>
+                            <?= $this->formElement($input) ?>
+                            <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+                        </div>
+                        <?php endforeach; ?>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                    <?= $this->form()->closeTag(); ?> 
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default mx-3" id="newComment">
+            <?= $this->form()->openTag($form); ?>            
+            <div class="panel-heading">
+                <p class="h2">Add new answer</p>
+            </div>
+            <div class="panel-body">
+            <?= $this->formHidden($form->get('csrf')); ?>  
+            <?= $this->formHidden($form->get('parent')->setAttributes(['id' => 'parent', 'value' => $parent->id])); ?>  
+                
+            <?php foreach($inputs as $input) : ?>
+                <div class="form-group">
+                    <?= $this->formLabel($input) ?>
+                    <?= $this->formElement($input) ?>
+                    <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+                </div>          
+            <?php endforeach; ?>
+
+            </div>
+            <div class="panel-footer">
+                <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
+            <?= $this->form()->closeTag(); ?>
+            </div>
+        </div>   
+
+<?= $this->inlineScript()->prependFile($this->basePath('js/modal.js')); ?>
+
+<?php if(isset($error_input) && $error_input['parent'] == 0) : ?>
+
+<script>
+    document.forms[1].<?= $error_input['field']; ?>.focus();
+    window.scrollBy(0, 600);
+</script>
+
+<?php elseif(isset($error_input) && $error_input['parent'] > 0) : ?>
+
+<script>$('#answer_to<?= $error_input['parent'] ?>').click();</script>
+
+<?php endif;
