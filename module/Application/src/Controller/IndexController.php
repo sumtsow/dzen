@@ -11,6 +11,7 @@ use Application\Model\Comment;
 use Application\Model\CommentTable;
 use Application\Form\CommentForm;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Session\Container;
 use Zend\Paginator\Adapter;
 use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
@@ -26,87 +27,89 @@ class IndexController extends AbstractActionController
     
     public function indexAction()
     {
-        $form = new CommentForm();
-        $page = ($this->params()->fromRoute('page')) ? $this->params()->fromRoute('page') : 1; 
-        $sort = ($this->params()->fromQuery('sort')) ? $this->params()->fromQuery('sort') : 'created_at';
-        $order = ($this->params()->fromQuery('order')) ? $this->params()->fromQuery('order') : 'ASC';        
-        $comments = $this->table->getHierarchy('0', $sort, $order);
+        $request = $this->getRequest();
+        $form = new CommentForm(); 
+        $page = ($this->params()->fromRoute('page')) ? $this->params()->fromRoute('page') : 1;
+        $container = new Container();
+        if(!is_array($container->params)) {
+            $container->params = array();
+        }
+        $container->params['user_name'] = ($container->params['user_name']) ? $container->params['user_name']: 'DESC';
+        $container->params['created_at'] = ($container->params['created_at']) ? $container->params['created_at']: 'DESC';
+        $container->params['email'] = ($container->params['email']) ? $container->params['email']: 'DESC';
+        if(empty($container->params['last'])) {
+            $container->params['last'] = 'created_at';
+        }
+        $comments = $this->table->getHierarchy('0', $container->params['last'], $container->params[$container->params['last']]);
         $paginator = new Paginator(new Adapter\ArrayAdapter($comments));
         $dir = strstr(__DIR__, '/module/Application/src/Controller', true);
         $confArray = include $dir.'/config/autoload/paginator.global.php';        
         $paginator->setCurrentPageNumber($page)
             ->setItemCountPerPage($confArray['per_page'])
             ->setPageRange(ceil(count($comments)/$confArray['per_page']));
-        return ([
+        $vm = new ViewModel();
+        if ($request->isPost()) {
+            $comment = new Comment();
+            $form->setInputFilter($comment->getInputFilter());
+            $form->setData($request->getPost());
+            if (!$form->isValid()) {
+                $vm->setVariable('error_input', [
+                        'field' => key($form->getMessages()),
+                        'parent' => $request->getPost('parent'),
+                    ]);
+            }
+            else {
+                $comment->exchangeArray($form->getData());
+                $this->table->saveComment($comment);
+            }
+        }
+        $vm->setVariables([
             'paginator' => $paginator,
             'form' => $form,
-            'order' => $order,
-            'sort' => $sort,
+            'sortParams' => $container->params,
         ]);
+        return $vm;
     }
         
     public function viewAction()
     {
+        $request = $this->getRequest();
         $form = new CommentForm();
-        $id = $this->params()->fromRoute('id');
-        $parent = $this->table->getComment($id);
-        return new ViewModel([
+        $parent = $this->table->getComment($this->params()->fromRoute('id'));
+        $request = $this->getRequest();
+        $comments = $this->table->getHierarchy($this->params()->fromRoute('id'), 'created_at', 'DESC');
+        $vm = new ViewModel();
+        if ($request->isPost()) {
+            $comment = new Comment();
+            $form->setInputFilter($comment->getInputFilter());
+            $form->setData($request->getPost());
+            if (!$form->isValid()) {
+                $vm->setVariable('error_input', [
+                    'field' => key($form->getMessages()),
+                    'parent' => $request->getPost('parent'),
+                ]);
+            }
+            else {
+                $comment->exchangeArray($form->getData());
+                $this->table->saveComment($comment);
+            }            
+        }
+        $vm->setVariables([
             'parent' => $parent,
-            'comments' => $this->table->getHierarchy($id),
+            'comments' => $comments,
             'form' => $form,
         ]);
+        return $vm;
     }
-        
+     
     public function switchAction()
     {
         $sort = ($this->params()->fromQuery('sort')) ? $this->params()->fromQuery('sort') : 'created_at';
-        $order = ($this->params()->fromQuery('order')) ? $this->params()->fromQuery('order') : 'ASC';
         $page = $this->params()->fromRoute('page');
-        if($order === 'DESC') {
-            $order = 'ASC';
-        }
-        elseif($order === 'ASC') {
-            $order = 'DESC';
-        }
-        return $this->redirect()->toUrl('/index/'.$page.'?sort='.$sort.'&order='.$order);
-    }
-    
-    public function addAction()
-    {
-        $form = new CommentForm();
-        $request = $this->getRequest();
-        if (!$request->isPost()) {
-            return $this->redirect()->toRoute('home');
-        }
-        $page = ($this->params()->fromRoute('page')) ? $this->params()->fromRoute('page') : 1;       
-        $sort = ($this->params()->fromQuery('sort')) ? $this->params()->fromQuery('sort') : 'created_at';
-        $order = ($this->params()->fromQuery('order')) ? $this->params()->fromQuery('order') : 'ASC'; 
-        $comment = new Comment();
-        $comments = $this->table->getHierarchy('0');
-        $paginator = new Paginator(new Adapter\ArrayAdapter($comments));
-        $dir = strstr(__DIR__, '/module/Application/src/Controller', true);
-        $confArray = include $dir.'/config/autoload/paginator.global.php';        
-        $paginator->setCurrentPageNumber($page)
-            ->setItemCountPerPage($confArray['per_page'])
-            ->setPageRange(ceil(count($comments)/$confArray['per_page']));
-        $form->setInputFilter($comment->getInputFilter());
-        $form->setData($request->getPost());
-        if (!$form->isValid()) {
-            return ([
-                'paginator' => $paginator,
-                'form' => $form,
-                'error_input' => [
-                    'field' => key($form->getMessages()),
-                    'parent' => $request->getPost('parent'),
-                    'order' => $order,
-                    'sort' => $sort,
-                ]
-            ]);
-        }
-
-        $comment->exchangeArray($form->getData());
-        $this->table->saveComment($comment);
-        return $this->redirect()->toRoute('home');
+        $container = new Container();
+        $container->params[$sort] = ($container->params[$sort] === 'ASC') ? 'DESC' : 'ASC';
+        $container->params['last'] = $sort;
+        return $this->redirect()->toUrl('/index/'.$page);
     }
     
 }

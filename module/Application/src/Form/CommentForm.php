@@ -11,7 +11,7 @@ class CommentForm extends Form
     public function __construct($name = null)
     {
         parent::__construct('comment');
-        $this->setAttributes(['method' => 'post', 'action' => '/add']);
+        $this->setAttributes(['method' => 'post']);
         $this->add([
             'type' => Element\Csrf::class,
             'name' => 'csrf',

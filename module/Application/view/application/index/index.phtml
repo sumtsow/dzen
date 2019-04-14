@@ -16,8 +16,6 @@ $comments = $this->paginator;
      'Sliding',
      'application/index/page.phtml', [
          'id' => $this->id,
-         'sort' => $sort,
-         'order' => $order,
      ]); ?>
     </div>
 </div>
@@ -28,16 +26,16 @@ $comments = $this->paginator;
         <table class="table table-striped">
             <thead class="justify-content-center">
                 <tr>
-                    <th scope="col" class="text-center"><a href="/switch?sort=user_name&order=<?= $order ?>">User Name</a></th>
-                    <th scope="col" class="text-center"><a href="/switch?sort=created_at&order=<?= $order ?>">Date & Time</a></th>
+                    <th scope="col" class="text-center"><a href="/switch?sort=user_name"><?= drawArrow('user_name', $sortParams); ?>User Name</a></th>
+                    <th scope="col" class="text-center"><a href="/switch?sort=created_at"><?= drawArrow('created_at', $sortParams); ?>Date & Time</a></th>
                     <th scope="col" class="text-center">Text</th>
-                    <th scope="col" class="text-center"><a href="/switch?sort=email&order=<?= $order ?>">E-mail</a></th>                
+                    <th scope="col" class="text-center"><a href="/switch?sort=email"><?= drawArrow('email', $sortParams); ?>E-mail</a></th>                
                 </tr>
             </thead>
             <tbody>
             <?php foreach($comments as $comment) : ?>
                 <tr>
-                    <th scope="row"><a href="<?= $this->url('application', ['action' => 'view', 'id' => $comment->id]) ?>"><?= $comment->user_name; ?></a></td>
+                    <th scope="row"><a href="<?= $this->url('application', ['action' => 'view', 'id' => $comment->id]) ?>"><?= $comment->user_name; ?></a></th>
                     <td><?= strftime('%d.%m.%Y %X ', strtotime($comment->created_at)); ?></td>
                     <td><?= $comment->text; ?></td>
                     <td><a href="mailto://<?= $comment->email; ?>"><?= $comment->email; ?></a></td>                
@@ -49,6 +47,21 @@ $comments = $this->paginator;
 </div>
 
 <?php
+
+function drawArrow($current, $params) {
+    $arrow = '';
+    if($current === $params['last']) {
+        if($params[$current] == 'ASC') {
+            $arrow = '&uarr; ';
+        }
+        else {
+            $arrow = '&darr; ';
+        }
+    }
+    return $arrow;
+}
+
+$form->setAttribute('action', '/');
 $inputs = [
     'user_name' => $form->get('user_name'),
     'email'     => $form->get('email'),
@@ -68,8 +81,6 @@ $form->prepare();
      'Sliding',
      'application/index/page.phtml', [
          'id' => $this->id,
-         'sort' => $sort,
-         'order' => $order,
      ]); ?>
     </div>
 </div>
@@ -86,7 +97,7 @@ $form->prepare();
         <?php foreach($inputs as $input) : ?>
         <div class="form-group">
             <?= $this->formLabel($input) ?>
-            <?= $this->formElement($input) ?>
+            <?= $this->formElement($input->setAttribute('id', $input->getAttribute('name'))) ?>
             <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
         </div>          
         <?php endforeach; ?>
@@ -101,7 +112,7 @@ $form->prepare();
 <?php if(isset($error_input)) : ?>
 
 <script>
-    document.forms[0].<?= $error_input['field']; ?>.focus();
+    $('#<?= $error_input["field"]; ?>').focus();
     window.scrollBy(0, 500);
 </script>
 

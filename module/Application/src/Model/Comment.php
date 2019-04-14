@@ -33,7 +33,9 @@ class Comment implements InputFilterAwareInterface
         $this->id           = !empty($data['id']) ? $data['id'] : null;
         $this->user_name    = !empty($data['user_name']) ? $data['user_name'] : null;
         $this->user_ip      = !empty($data['user_ip']) ? $data['user_ip'] : $_SERVER['REMOTE_ADDR'];
+        // $request->getServer()->get('REMOTE_ADDR');
         $this->user_agent   = !empty($data['user_agent']) ? $data['user_agent'] : $_SERVER['HTTP_USER_AGENT'];        
+        // $request->getServer()->get('HTTP_USER_AGENT');
         $this->email        = !empty($data['email']) ? $data['email'] : null;
         $this->home_page    = !empty($data['home_page']) ? $data['home_page'] : null;
         $this->text         = !empty($data['text']) ? $data['text'] : null;

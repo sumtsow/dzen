@@ -8,8 +8,6 @@ if ($this->pageCount):
   <a class="page-link" href="<?= $this->url($this->route, array(
       'action'=>'index',
       'page' => $this->previous,
-      'sort' => $sort,
-      'order' => $order,
   )); ?>">&larr;Prev</a>
 </li>
 <?php endif; ?>
@@ -21,8 +19,6 @@ if ($this->pageCount):
     <a class="page-link" href="<?= $this->url($this->route, [
         'action'=>'index',
         'page' => $page,
-        'sort' => $sort,
-        'order' => $order,        
     ]); ?>"><?= $page; ?></a>
 </li>    
 <?php endforeach; ?>
@@ -33,8 +29,6 @@ if ($this->pageCount):
   <a class="page-link" href="<?= $this->url($this->route, array(
       'action'=>'index',
       'page' => $this->next,
-      'sort' => $sort,
-      'order' => $order,
   )); ?>">Next&rarr;</a>
 </li>
 <?php endif; ?>
