@@ -1,11 +1,19 @@
 <div class="row mt-3">
     <div class="col">
-        <div class="panel panel-default mx-3">
-            <div class="panel-heading">
-                <h3 class="panel-title"><span class="font-weight-bold"><?= $parent->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($parent->created_at))); ?></h3>
+        <div class="card mx-3">
+            <div class="card-header text-small">
+                <h4 class="card-title"><span class="font-weight-bold"><?= $parent->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($parent->created_at))); ?></h4>
             </div>
-            <div class="panel-body">
-                <?= $parent->text; ?>
+            
+            <div class="card-body">            
+            <?php
+            if(false !== strpos($parent->file_type, 'image')) : ?>
+                <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$parent->file_name; ?>"><img class="img-fluid float-left align-top mx-3 my-0" src="<?= '/files/img/'.$parent->file_name; ?>" alt="Comment image"></a>
+            <?php elseif(false !== strpos($parent->file_type, 'text')) : ?>
+                <a target="_blank" href="<?= '/files/txt/'.$parent->file_name; ?>"><span class="fa fa-file-alt"></span></a>
+            <?php endif; ?>
+                
+            <?= $parent->text; ?>
             </div>
         </div>
         <h2 class="ml-3">Answers:</h2>
@@ -18,11 +26,17 @@
         if($comments) :
             foreach($comments as $comment) :
 ?>
-                <div class="panel panel-default mx-3">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><span class="font-weight-bold"><?= $comment->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($comment->created_at))); ?></h3>
+                <div class="card mx-3 mb-3">
+                    <div class="card-header">
+                        <h5 class="card-title"><span class="font-weight-bold"><?= $comment->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($comment->created_at))); ?></h5>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
+                    <?php if(false !== strpos($comment->file_type, 'image')) : ?>
+                        <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$comment->file_name; ?>"><img class="img-fluid float-left align-top mx-3 my-0" src="<?= '/files/img/'.$comment->file_name; ?>" alt="Comment image"></a>
+                    <?php elseif($comment->file_type === 'text/plain') : ?>
+                        <a target="_blank" href="<?= '/files/txt/'.$comment->file_name; ?>"><span class="fa fa-file-alt d-block mx-3 my-2 float-left"></span></a>
+                    <?php endif; ?>
+                        
                         <p><?= $comment->text; ?></p>
                         <p><button id="answer_to<?= $comment->id; ?>" type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#comment" data-whatever="<?= $comment->id; ?>">Answer &raquo;</button></p>
                     </div>
@@ -42,6 +56,7 @@ $form->setAttribute('action', '/view/'.$parent->id);
         'email'     => $form->get('email'),
         'home_page' => $form->get('home_page'),
         'text'      => $form->get('text'),
+        'file' => $form->get('file'), 
         'captcha'   => $form->get('captcha'),
     ];
     foreach($inputs as $input) {

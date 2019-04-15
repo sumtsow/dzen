@@ -2,6 +2,6 @@
 vendor/
 config/development.config.php
 data/cache/*
-!data/cache/.gitkeep
+data/cache/.gitkeep
 phpunit.xml
 /nbproject/

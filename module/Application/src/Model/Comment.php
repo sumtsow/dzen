@@ -21,6 +21,7 @@ class Comment implements InputFilterAwareInterface
 	public $email;
         public $home_page;
 	public $text;
+        public $file;
 	public $parent;
         public $created_at;
         
@@ -33,12 +34,11 @@ class Comment implements InputFilterAwareInterface
         $this->id           = !empty($data['id']) ? $data['id'] : null;
         $this->user_name    = !empty($data['user_name']) ? $data['user_name'] : null;
         $this->user_ip      = !empty($data['user_ip']) ? $data['user_ip'] : $_SERVER['REMOTE_ADDR'];
-        // $request->getServer()->get('REMOTE_ADDR');
-        $this->user_agent   = !empty($data['user_agent']) ? $data['user_agent'] : $_SERVER['HTTP_USER_AGENT'];        
-        // $request->getServer()->get('HTTP_USER_AGENT');
-        $this->email        = !empty($data['email']) ? $data['email'] : null;
+        $this->user_agent   = !empty($data['user_agent']) ? $data['user_agent'] : $_SERVER['HTTP_USER_AGENT'];           $this->email        = !empty($data['email']) ? $data['email'] : null;
         $this->home_page    = !empty($data['home_page']) ? $data['home_page'] : null;
         $this->text         = !empty($data['text']) ? $data['text'] : null;
+        $this->file_name    = !empty($data['file_name']) ? $data['file_name'] : null;
+        $this->file_type    = !empty($data['file_type']) ? $data['file_type'] : null;        
         $this->parent       = !empty($data['parent']) ? $data['parent'] : 0;
         $this->created_at   = !empty($data['created_at']) ? $data['created_at'] : date("Y-m-d H:i:s");      
     }
@@ -147,6 +147,24 @@ class Comment implements InputFilterAwareInterface
                 ],
             ],
         ]);
+        
+        /*$inputFilter->add([
+            'name' => 'file',
+            'required' => false,
+            'filters' => [
+                ['name' => StringTrim::class],
+            ],
+            'validators' => [
+                [
+                    'name' => StringLength::class,
+                    'options' => [
+                        'encoding' => 'UTF-8',
+                        'min' => 1,
+                        'max' => 256,
+                    ],
+                ],
+            ],
+        ]);*/
         
         $inputFilter->add([
             'name' => 'created_at',

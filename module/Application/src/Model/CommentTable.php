@@ -74,13 +74,15 @@ class CommentTable
     public function saveComment(Comment $comment)
     {
         $data = [
-            'id' => $comment->id,
+            'id' => (int) $comment->id,
             'user_name'  => $comment->user_name,
             'user_ip' => $comment->user_ip,
             'user_agent' => $comment->user_agent,
             'email'  => $comment->email,
             'home_page' => $comment->home_page,
             'text'  => $comment->text,
+            'file_name' => $comment->file_name,
+            'file_type'  => $comment->file_type,
             'parent'  => (int) $comment->parent,
             'created_at' => $comment->created_at,
         ];
@@ -89,6 +91,9 @@ class CommentTable
 
         if ($id === 0) {
             $this->tableGateway->insert($data);
+            $file = $comment->getInputFilter()->getValue('file');
+            $dir = ($comment->file_type === 'text/plain') ? $_SERVER['DOCUMENT_ROOT'].'/files/txt/' : $_SERVER['DOCUMENT_ROOT'].'/files/img/';
+            copy($file['tmp_name'], $dir.$comment->file_name);
             return;
         }
 

@@ -56,6 +56,22 @@ class CommentForm extends Form
         ]);
         
         $this->add([
+            'name' => 'file',
+            'type' => Element\File::class,
+            'options' => [
+                'label' => 'File',
+            ],
+        ]);
+                
+        /*$this->add([
+            'name' => 'file_type',
+            'type' => 'text',
+            'options' => [
+                'label' => 'File type',
+            ],
+        ]);*/
+        
+        $this->add([
             'name' => 'user_ip',
             'type' => 'text',
             'options' => [

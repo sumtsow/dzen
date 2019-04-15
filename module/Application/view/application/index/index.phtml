@@ -29,6 +29,7 @@ $comments = $this->paginator;
                     <th scope="col" class="text-center"><a href="/switch?sort=user_name"><?= drawArrow('user_name', $sortParams); ?>User Name</a></th>
                     <th scope="col" class="text-center"><a href="/switch?sort=created_at"><?= drawArrow('created_at', $sortParams); ?>Date & Time</a></th>
                     <th scope="col" class="text-center">Text</th>
+                    <th scope="col" class="text-center">&nbsp;</th>
                     <th scope="col" class="text-center"><a href="/switch?sort=email"><?= drawArrow('email', $sortParams); ?>E-mail</a></th>                
                 </tr>
             </thead>
@@ -38,6 +39,16 @@ $comments = $this->paginator;
                     <th scope="row"><a href="<?= $this->url('application', ['action' => 'view', 'id' => $comment->id]) ?>"><?= $comment->user_name; ?></a></th>
                     <td><?= strftime('%d.%m.%Y %X ', strtotime($comment->created_at)); ?></td>
                     <td><?= $comment->text; ?></td>
+                    <td>
+                        <?php
+                        if(false !== strpos($comment->file_type, 'image')) : ?>
+                        <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$comment->file_name; ?>"><span class="fa fa-image"></span></a>
+                        <?php elseif(false !== strpos($comment->file_type, 'text')) : ?>
+                        <a target="_blank" href="<?= '/files/txt/'.$comment->file_name; ?>"><span class="fa fa-file-alt"></span></a>
+                        <?php else : ?>
+                        &nbsp;
+                        <?php endif; ?>
+                    </td>
                     <td><a href="mailto://<?= $comment->email; ?>"><?= $comment->email; ?></a></td>                
                 </tr>
             <?php endforeach; ?>
@@ -66,8 +77,6 @@ $inputs = [
     'user_name' => $form->get('user_name'),
     'email'     => $form->get('email'),
     'home_page' => $form->get('home_page'),
-    'text'      => $form->get('text'),
-    'captcha'   => $form->get('captcha'),
 ];
 foreach($inputs as $input) {
     $input->setAttribute('class', 'form-control');
@@ -101,13 +110,50 @@ $form->prepare();
             <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
         </div>          
         <?php endforeach; ?>
+        
+        <div class="form-group">
+            <?php
+            $input = $form->get('text');
+            $input->setAttributes(['class' =>'form-control', 'contenteditable' => 'true']);
+            ?>            
+            <?= $this->formLabel($input) ?>
+            <div role="group" class="border border-secondary rounded px-2 pb-5">
+                <button type="button" class="btn btn-secondary m-1" onClick="strong"><strong>B</strong></button>
+                <button type="button" class="btn btn-secondary m-1" id="make-italic"><i>I</i></button>
+                <button type="button" class="btn btn-secondary m-1" id="make-code">&lt;Code&gt;</button>
+                <button type="button" class="btn btn-secondary m-1" id="make-url">&lt;A&gt;</button>
+            <?= $this->formElement($input->setAttribute('id', $input->getAttribute('name'))) ?>
+            </div>
+            <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+        </div>
+                
+        <div class="custom-file my-5">
+            <?php
+            $input = $form->get('file');
+            $input->setAttribute('class', 'custom-file-input');
+            ?>            
+            <label class="custom-file-label" for="customFile">Choose file</label>
+            <?= $this->formElement($input->setAttribute('id', 'customFile')) ?>
+            <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+        </div>
+        
+        <div class="form-group">
+            <?php
+            $input = $form->get('captcha');
+            $input->setAttribute('class', 'form-control');
+            ?>            
+            <?= $this->formLabel($input) ?>
+            <?= $this->formElement($input->setAttribute('id', 'captcha')) ?>
+            <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+        </div>
+ 
 
     </div>
     <div class="panel-footer">
         <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
         <?= $this->form()->closeTag(); ?>
     </div>
-</div>   
+</div>
 
 <?php if(isset($error_input)) : ?>
 

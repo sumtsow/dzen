@@ -41,5 +41,9 @@ div.container a.navbar-brand > img {
 }
 
 textarea.form-control {
-    height: 200px;
+    height: 140px;
+}
+
+.fa {
+    font-size: xx-large;
 }

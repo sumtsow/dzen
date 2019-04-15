@@ -34,9 +34,9 @@ class IndexController extends AbstractActionController
         if(!is_array($container->params)) {
             $container->params = array();
         }
-        $container->params['user_name'] = ($container->params['user_name']) ? $container->params['user_name']: 'DESC';
-        $container->params['created_at'] = ($container->params['created_at']) ? $container->params['created_at']: 'DESC';
-        $container->params['email'] = ($container->params['email']) ? $container->params['email']: 'DESC';
+        $container->params['user_name'] = (isset($container->params['user_name'])) ? $container->params['user_name']: 'DESC';
+        $container->params['created_at'] = (isset($container->params['created_at'])) ? $container->params['created_at']: 'DESC';
+        $container->params['email'] = (isset($container->params['email'])) ? $container->params['email']: 'DESC';
         if(empty($container->params['last'])) {
             $container->params['last'] = 'created_at';
         }
@@ -50,8 +50,12 @@ class IndexController extends AbstractActionController
         $vm = new ViewModel();
         if ($request->isPost()) {
             $comment = new Comment();
+            $post = array_merge_recursive(
+                $request->getPost()->toArray(),
+                $request->getFiles()->toArray()
+            );
             $form->setInputFilter($comment->getInputFilter());
-            $form->setData($request->getPost());
+            $form->setData($post);
             if (!$form->isValid()) {
                 $vm->setVariable('error_input', [
                         'field' => key($form->getMessages()),
@@ -81,8 +85,12 @@ class IndexController extends AbstractActionController
         $vm = new ViewModel();
         if ($request->isPost()) {
             $comment = new Comment();
+            $post = array_merge_recursive(
+                $request->getPost()->toArray(),
+                $request->getFiles()->toArray()
+            );
             $form->setInputFilter($comment->getInputFilter());
-            $form->setData($request->getPost());
+            $form->setData($post);
             if (!$form->isValid()) {
                 $vm->setVariable('error_input', [
                     'field' => key($form->getMessages()),
@@ -90,6 +98,8 @@ class IndexController extends AbstractActionController
                 ]);
             }
             else {
+                $form->setData('file_name', $form->getData()->file['name']);
+                $form->setData('file_type', $form->getData()->file['type']);
                 $comment->exchangeArray($form->getData());
                 $this->table->saveComment($comment);
             }            
