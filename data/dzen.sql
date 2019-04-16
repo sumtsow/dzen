@@ -36,8 +36,8 @@ CREATE TABLE `comments` (
   `email` varchar(128) NOT NULL,
   `home_page` varchar(128) DEFAULT NULL,
   `text` text NOT NULL,
-  `file_name` varchar(256) NOT NULL,
-  `file_type` varchar(10) NOT NULL,
+  `file_name` varchar(256) DEFAULT NULL,
+  `file_type` varchar(10) DEFAULT NULL,
   `parent` int(11) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
