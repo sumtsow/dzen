@@ -151,7 +151,7 @@ class IndexController extends AbstractActionController
         $container = new Container();
         $container->params[$sort] = ($container->params[$sort] === 'ASC') ? 'DESC' : 'ASC';
         $container->params['last'] = $sort;
-        return $this->redirect()->toUrl('/index/'.$page);
+        return $this->redirect()->toUrl('/'.$page);
     }
     
 }
