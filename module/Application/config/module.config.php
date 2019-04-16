@@ -59,4 +59,10 @@ return [
             __DIR__ . '/../view',
         ],
     ],
+    
+    'service_manager' => [
+        'factories' => [
+            Service\ImageManager::class => InvokableFactory::class,            
+        ],
+    ],
 ];

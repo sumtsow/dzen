@@ -11,7 +11,11 @@ class CommentForm extends Form
     public function __construct($name = null)
     {
         parent::__construct('comment');
-        $this->setAttributes(['method' => 'post']);
+        $this->setAttributes([
+            'method' => 'post',
+            'enctype' => 'multipart/form-data',
+            ]);
+
         $this->add([
             'type' => Element\Csrf::class,
             'name' => 'csrf',
@@ -41,7 +45,7 @@ class CommentForm extends Form
         
         $this->add([
             'name' => 'home_page',
-            'type' => Element\Url::class,
+            'type' => 'text',
             'options' => [
                 'label' => 'Home Page',
             ],
@@ -62,14 +66,6 @@ class CommentForm extends Form
                 'label' => 'File',
             ],
         ]);
-                
-        /*$this->add([
-            'name' => 'file_type',
-            'type' => 'text',
-            'options' => [
-                'label' => 'File type',
-            ],
-        ]);*/
         
         $this->add([
             'name' => 'user_ip',
@@ -92,14 +88,14 @@ class CommentForm extends Form
             'type' => 'hidden',
         ]);  
         
-        $this->add([
+        /*$this->add([
             'name' => 'created_at',
             'type' => Element\DateTime::class,
             'options' => [
                 'label' => 'Date/Time',
-                'format' => 'Y-m-d\TH:iP',
+                'format' => 'Y-m-d H:i:s',
             ],
-        ]);
+        ]);*/
         
         $this->add([
             'name' => 'captcha',

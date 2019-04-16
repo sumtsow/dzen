@@ -2,47 +2,81 @@
     <div class="col">
         <div class="card mx-3">
             <div class="card-header text-small">
-                <h4 class="card-title"><span class="font-weight-bold"><?= $parent->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($parent->created_at))); ?></h4>
+                <h4 class="card-title">
+                    <span class="font-weight-bold">
+                    <?= $this->escapeHtml($parent->user_name); ?>
+                    </span>
+                    <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($parent->created_at))); ?>
+                </h4>
             </div>
             
-            <div class="card-body">            
+            <div class="card-body"> 
+                
             <?php
-            if(false !== strpos($parent->file_type, 'image')) : ?>
-                <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$parent->file_name; ?>"><img class="img-fluid float-left align-top mx-3 my-0" src="<?= '/files/img/'.$parent->file_name; ?>" alt="Comment image"></a>
-            <?php elseif(false !== strpos($parent->file_type, 'text')) : ?>
-                <a target="_blank" href="<?= '/files/txt/'.$parent->file_name; ?>"><span class="fa fa-file-alt"></span></a>
+            if(false !== strpos($parent->file['type'], 'image')) : ?>
+                
+                <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$this->escapeHtml($parent->file['name']); ?>">
+                    <img class="img-fluid float-left align-top mx-3 my-0" src="<?= '/files/img/'.$this->escapeHtml($parent->file['name']); ?>" alt="Comment image">
+                </a>
+                
+            <?php elseif(false !== strpos($parent->file['type'], 'text')) : ?>
+                
+                <a target="_blank" href="<?= '/files/txt/'.$this->escapeHtml($parent->file['name']); ?>">
+                    <span class="fa fa-file-alt"></span>
+                </a>
+                
             <?php endif; ?>
                 
-            <?= $parent->text; ?>
+                <?= html_entity_decode($parent->text); ?>
+                
             </div>
         </div>
         <h2 class="ml-3">Answers:</h2>
+        
         <?php outRecusively($comments); ?>
+        
     </div>
 </div>
 
 <?php
     function outRecusively($comments) {
+        
         if($comments) :
+            
             foreach($comments as $comment) :
 ?>
                 <div class="card mx-3 mb-3">
+                    
                     <div class="card-header">
                         <h5 class="card-title"><span class="font-weight-bold"><?= $comment->user_name; ?></span> <?= (strftime("%d.%m.%Y в %H:%M ", strtotime($comment->created_at))); ?></h5>
                     </div>
+                    
                     <div class="card-body">
-                    <?php if(false !== strpos($comment->file_type, 'image')) : ?>
-                        <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$comment->file_name; ?>"><img class="img-fluid float-left align-top mx-3 my-0" src="<?= '/files/img/'.$comment->file_name; ?>" alt="Comment image"></a>
-                    <?php elseif($comment->file_type === 'text/plain') : ?>
-                        <a target="_blank" href="<?= '/files/txt/'.$comment->file_name; ?>"><span class="fa fa-file-alt d-block mx-3 my-2 float-left"></span></a>
+                        
+                    <?php if(false !== strpos($comment->file['type'], 'image')) : ?>
+                        
+                        <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$comment->file['name']; ?>">
+                            <img class="img-fluid float-left align-top mx-3 my-0" src="<?= '/files/img/'.$comment->file['name']; ?>" alt="Comment image">
+                        </a>
+                        
+                    <?php elseif($comment->file['type'] === 'text/plain') : ?>
+                        
+                        <a target="_blank" href="<?= '/files/txt/'.$comment->file['name']; ?>"><span class="fa fa-file-alt d-block mx-3 my-2 float-left"></span></a>
+                        
                     <?php endif; ?>
                         
-                        <p><?= $comment->text; ?></p>
-                        <p><button id="answer_to<?= $comment->id; ?>" type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#comment" data-whatever="<?= $comment->id; ?>">Answer &raquo;</button></p>
+                        <p><?= html_entity_decode($comment->text); ?></p>
+                        
+                        <p>
+                            <button id="answer_to<?= $comment->id; ?>" type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#comment" data-whatever="<?= $comment->id; ?>">Answer &raquo;</button>
+                        </p>
+                        
                     </div>
 <?php
                 if ($comment->children) :
+                    
                     outRecusively($comment->children);
+                
                 endif;        
 ?>
                 </div>
@@ -50,14 +84,13 @@
             endforeach;
         endif;
     }
+    
 $form->setAttribute('action', '/view/'.$parent->id);
     $inputs = [
         'user_name' => $form->get('user_name'),
         'email'     => $form->get('email'),
         'home_page' => $form->get('home_page'),
         'text'      => $form->get('text'),
-        'file' => $form->get('file'), 
-        'captcha'   => $form->get('captcha'),
     ];
     foreach($inputs as $input) {
         $input->setAttribute('class', 'form-control');
@@ -68,7 +101,9 @@ $form->setAttribute('action', '/view/'.$parent->id);
 
         <div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="comment" aria-hidden="true">
             <div class="modal-dialog" role="document">
+                
                 <div class="modal-content">
+                    
                     <div class="modal-header">
                         <h4 class="modal-title" id="comment_header"></h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -82,46 +117,112 @@ $form->setAttribute('action', '/view/'.$parent->id);
                         <?= $this->formHidden($form->get('parent')->setAttribute('id', 'parent')); ?>  
                         
                         <?php foreach($inputs as $key => $input) : ?>
+                        
                         <div class="form-group">
                             <?= $this->formLabel($input) ?>
                             <?= $this->formElement($input) ?>
                             <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
                         </div>
+                        
                         <?php endforeach; ?>
+                
+                        <div class="custom-file my-5">
+                            <?php
+                            $input = $form->get('file');
+                            $input->setAttribute('class', 'custom-file-input');
+                            ?>            
+                            <label class="custom-file-label" for="customFile">Choose file</label>
+                            <?= $this->formElement($input->setAttribute('id', 'customFile')) ?>
+                            <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+                        </div>
+
+                        <div class="form-group">
+                            <?php
+                            $input = $form->get('captcha');
+                            $input->setAttribute('class', 'form-control');
+                            ?>            
+                            <?= $this->formLabel($input) ?>
+                            <?= $this->formElement($input->setAttribute('id', 'captcha')) ?>
+                            <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+                        </div>
                         
                     </div>
+                    
                     <div class="modal-footer">
+                        
                         <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
+                        
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     </div>
+                    
                     <?= $this->form()->closeTag(); ?> 
+                    
                 </div>
+                
             </div>
+            
         </div>
+
 <?php endif; ?>
 
         <div class="panel panel-default mx-3" id="newComment">
-            <?= $this->form()->openTag($form); ?>            
+            
+            <?= $this->form()->openTag($form); ?>  
+            
             <div class="panel-heading">
                 <p class="h2">Add new answer</p>
             </div>
+            
             <div class="panel-body">
             <?= $this->formHidden($form->get('csrf')); ?>  
             <?= $this->formHidden($form->get('parent')->setAttributes(['id' => 'parent', 'value' => $parent->id])); ?>  
-                
+
             <?php foreach($inputs as $input) : ?>
+                
                 <div class="form-group">
                     <?= $this->formLabel($input) ?>
                     <?= $this->formElement($input->setAttribute('id', $input->getAttribute('name'))) ?>
                     <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
-                </div>          
+                </div>
+                
             <?php endforeach; ?>
+                
+                <div class="custom-file my-5">
+                    
+                    <?php
+                        $input = $form->get('file');
+                        $input->setAttribute('class', 'custom-file-input');
+                    ?>
+                    
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                    
+                    <?= $this->formElement($input->setAttribute('id', 'customFile')) ?>
+                    <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+                    
+                </div>
 
+                <div class="form-group">
+                    
+                    <?php
+                        $input = $form->get('captcha');
+                        $input->setAttribute('class', 'form-control');
+                    ?>
+                    
+                    <?= $this->formLabel($input) ?>
+                    <?= $this->formElement($input->setAttribute('id', 'captcha')) ?>
+                    <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+                    
+                </div>
+                
             </div>
+            
             <div class="panel-footer">
+                
                 <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
-            <?= $this->form()->closeTag(); ?>
+                <?= $this->form()->closeTag(); ?>
+                
             </div>
+            
         </div>   
 
 <?php

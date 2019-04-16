@@ -29,11 +29,13 @@ class CommentTable
         $select->from('comments')->where("parent = '$id'")->order($sort.' '.$order);
         $resultSet = $this->tableGateway->selectWith($select);
         $resultArr = false;
+        
         if($resultSet) {
             foreach($resultSet as $result) {
                 $resultArr[] = $result;
             }
         }
+        
         return $resultArr;
     } 
     
@@ -47,6 +49,7 @@ class CommentTable
     {
         $result = false;
         $comments = $this->fetchChildren($id, $sort, $order);
+        
         if($comments) {
             foreach($comments as $comment) {
                 if(self::hasChildren($comment->id)) {
@@ -55,6 +58,7 @@ class CommentTable
                 $result[] = $comment;
             }
         }
+        
         return $result;
     }
     
@@ -62,38 +66,42 @@ class CommentTable
     {
         $rowset = $this->tableGateway->select(['id' => $id]);
         $row = $this->tableGateway->select(['id' => $id])->current();
+        
         if (! $row) {
             throw new RuntimeException(sprintf(
                 'Could not find row with identifier %d',
                 $id
             ));
         }
+        
         return $row;
     }
 
     public function saveComment(Comment $comment)
     {
         $data = [
-            'id' => (int) $comment->id,
-            'user_name'  => $comment->user_name,
-            'user_ip' => $comment->user_ip,
-            'user_agent' => $comment->user_agent,
-            'email'  => $comment->email,
+            'id'        => (int) $comment->id,
+            'user_name' => $comment->user_name,
+            'user_ip'   => $comment->user_ip,
+            'user_agent'=> $comment->user_agent,
+            'email'     => $comment->email,
             'home_page' => $comment->home_page,
-            'text'  => $comment->text,
+            'text'      => $comment->text,
             'file_name' => $comment->file_name,
-            'file_type'  => $comment->file_type,
-            'parent'  => (int) $comment->parent,
-            'created_at' => $comment->created_at,
+            'file_type' => $comment->file_type,
+            'parent'    => (int) $comment->parent,
+            'created_at'=> $comment->created_at,
         ];
 
         $id = (int) $comment->id;
 
         if ($id === 0) {
+            $data['text'] = htmlentities($data['text']);
             $this->tableGateway->insert($data);
-            $file = $comment->getInputFilter()->getValue('file');
-            $dir = ($comment->file_type === 'text/plain') ? $_SERVER['DOCUMENT_ROOT'].'/files/txt/' : $_SERVER['DOCUMENT_ROOT'].'/files/img/';
-            copy($file['tmp_name'], $dir.$comment->file_name);
+            $path = $_SERVER['DOCUMENT_ROOT'].'/files/';
+            $dir = ($comment->file_type === 'text/plain') ? 'txt/' : 'img/';
+            copy($path.$comment->file_name, $path.$dir.$comment->file_name);
+            unlink($path.$comment->file_name);
             return;
         }
 

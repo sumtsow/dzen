@@ -30,7 +30,8 @@
         "zendframework/zend-math": "^3.2",
         "zendframework/zend-captcha": "^2.8",
         "zendframework/zend-i18n": "^2.9",
-        "zendframework/zend-paginator": "^2.8"
+        "zendframework/zend-paginator": "^2.8",
+        "zendframework/zend-escaper": "^2.6"
     },
     "autoload": {
         "psr-4": {

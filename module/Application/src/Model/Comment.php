@@ -2,15 +2,17 @@
 namespace Application\Model;
 
 use DomainException;
+use Zend\Filter\DateTimeFormatter;
 use Zend\Filter\StringTrim;
 use Zend\Filter\StripTags;
 use Zend\InputFilter\InputFilter;
 use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
-use Zend\Validator\StringLength;
+use Zend\Validator\Date;
 use Zend\Validator\EmailAddress;
-use Zend\Validator\Uri;
 use Zend\Validator\Regex;
+use Zend\Validator\StringLength;
+use Zend\Validator\Uri;
 
 class Comment implements InputFilterAwareInterface
 {
@@ -34,13 +36,26 @@ class Comment implements InputFilterAwareInterface
         $this->id           = !empty($data['id']) ? $data['id'] : null;
         $this->user_name    = !empty($data['user_name']) ? $data['user_name'] : null;
         $this->user_ip      = !empty($data['user_ip']) ? $data['user_ip'] : $_SERVER['REMOTE_ADDR'];
-        $this->user_agent   = !empty($data['user_agent']) ? $data['user_agent'] : $_SERVER['HTTP_USER_AGENT'];           $this->email        = !empty($data['email']) ? $data['email'] : null;
+        $this->user_agent   = !empty($data['user_agent']) ? $data['user_agent'] : $_SERVER['HTTP_USER_AGENT'];
+        $this->email        = !empty($data['email']) ? $data['email'] : null;
         $this->home_page    = !empty($data['home_page']) ? $data['home_page'] : null;
         $this->text         = !empty($data['text']) ? $data['text'] : null;
-        $this->file_name    = !empty($data['file_name']) ? $data['file_name'] : null;
-        $this->file_type    = !empty($data['file_type']) ? $data['file_type'] : null;        
         $this->parent       = !empty($data['parent']) ? $data['parent'] : 0;
-        $this->created_at   = !empty($data['created_at']) ? $data['created_at'] : date("Y-m-d H:i:s");      
+        $this->created_at   = !empty($data['created_at']) ? $data['created_at'] : date("Y-m-d H:i:s");
+        
+        if(!empty($data['file_name'])) {
+            $this->file['name'] = $data['file_name'];
+        }
+        elseif(!empty($data['file']['name'])) {
+            $this->file_name = $data['file']['name'];
+        }
+        
+        if(!empty($data['file_type'])) {
+            $this->file['type'] = $data['file_type'];
+        }
+        elseif(!empty($data['file']['type'])) {
+            $this->file_type = $data['file']['type'];
+        }
     }
     
     public function setInputFilter(InputFilterInterface $inputFilter)
@@ -118,14 +133,17 @@ class Comment implements InputFilterAwareInterface
                     'name' => StringLength::class,
                     'options' => [
                         'encoding' => 'UTF-8',
-                        'min' => 8,
+                        'min' => 0,
                         'max' => 128,
                     ],
                 ],
                 [
                     'name' => Uri::class,
-                    'type' => 'uri',
-                ],                
+                    'options' => [
+                        'allowAbsolute' => true,
+                        'AllowRelative' => false,
+                        ],                    
+                ],
             ],
         ]);
 
@@ -148,39 +166,21 @@ class Comment implements InputFilterAwareInterface
             ],
         ]);
         
-        /*$inputFilter->add([
-            'name' => 'file',
-            'required' => false,
-            'filters' => [
-                ['name' => StringTrim::class],
-            ],
-            'validators' => [
-                [
-                    'name' => StringLength::class,
-                    'options' => [
-                        'encoding' => 'UTF-8',
-                        'min' => 1,
-                        'max' => 256,
-                    ],
-                ],
-            ],
-        ]);*/
-        
         $inputFilter->add([
             'name' => 'created_at',
             'required' => false,
             'filters' => [
-                ['name' => StripTags::class],
-                ['name' => StringTrim::class],
+                ['name' => DateTimeFormatter::class]
             ],
             'validators' => [
                 [
-                    'name' => StringLength::class,
+                    'name' => Date::class,
+                    'type' => 'date',
                     'options' => [
-                        'encoding' => 'UTF-8',
+                        'format' => 'Y-m-d H:i:s',
                     ],
-                ],
-            ],
+                ]  
+            ]
         ]);
         
         $this->inputFilter = $inputFilter;

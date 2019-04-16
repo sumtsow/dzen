@@ -4,26 +4,32 @@ $comments = $this->paginator;
 <div class="jumbotron mt-5">
     <h1>Welcome to <span class="zf-green">Dzen Code Guestbook!</span></h1>
     <p>
-        Great! We successfully completed the task.
+        I successfully completed the task using ZF3.
         Now you can validate it.
     </p>
     <p><a class="btn btn-success btn-lg" href="https://github.com/sumtsow/dzen" target="_blank">Fork Dzen Code Guestbook on GitHub &raquo;</a></p>
 </div>
 
 <div class="row">
+    
     <div class="col text-center">
+        
 <?= $this->paginationControl($comments,
      'Sliding',
      'application/index/page.phtml', [
          'id' => $this->id,
      ]); ?>
+        
     </div>
+    
 </div>
 
 <div class="row">
     <div class="col">
         <h2>Posts:</h2>
+        
         <table class="table table-striped">
+            
             <thead class="justify-content-center">
                 <tr>
                     <th scope="col" class="text-center"><a href="/switch?sort=user_name"><?= drawArrow('user_name', $sortParams); ?>User Name</a></th>
@@ -33,27 +39,50 @@ $comments = $this->paginator;
                     <th scope="col" class="text-center"><a href="/switch?sort=email"><?= drawArrow('email', $sortParams); ?>E-mail</a></th>                
                 </tr>
             </thead>
+            
             <tbody>
+                
             <?php foreach($comments as $comment) : ?>
+                
                 <tr>
-                    <th scope="row"><a href="<?= $this->url('application', ['action' => 'view', 'id' => $comment->id]) ?>"><?= $comment->user_name; ?></a></th>
+                    <th scope="row"><a href="<?= $this->url('application', ['action' => 'view', 'id' => $comment->id]) ?>"><?= $this->escapeHtml($comment->user_name); ?></a></th>
                     <td><?= strftime('%d.%m.%Y %X ', strtotime($comment->created_at)); ?></td>
-                    <td><?= $comment->text; ?></td>
+                    <td><?= html_entity_decode($comment->text); ?></td>
                     <td>
                         <?php
-                        if(false !== strpos($comment->file_type, 'image')) : ?>
-                        <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$comment->file_name; ?>"><span class="fa fa-image"></span></a>
-                        <?php elseif(false !== strpos($comment->file_type, 'text')) : ?>
-                        <a target="_blank" href="<?= '/files/txt/'.$comment->file_name; ?>"><span class="fa fa-file-alt"></span></a>
-                        <?php else : ?>
-                        &nbsp;
-                        <?php endif; ?>
+                        if(isset($comment->file['type'])) :
+                            if(false !== strpos($comment->file['type'], 'image')) : ?>
+                        
+                            <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$this->escapeHtml($comment->file['name']); ?>">
+                                <span class="fa fa-image"></span>
+                            </a>
+                        
+                            <?php elseif(false !== strpos($comment->file['type'], 'text')) : ?>
+                        
+                                <a target="_blank" href="<?= '/files/txt/'.$this->escapeHtml($comment->file['name']); ?>">
+                                    <span class="fa fa-file-alt"></span>
+                                </a>
+                        
+                            <?php else : ?>
+                        
+                                &nbsp;
+                            
+                            <?php endif; ?>
+                            
+                        <?php endif; ?> 
+                            
                     </td>
-                    <td><a href="mailto://<?= $comment->email; ?>"><?= $comment->email; ?></a></td>                
+                    <td>
+                        <a href="mailto://<?= $this->escapeHtml($comment->email); ?>"><?= $this->escapeHtml($comment->email); ?></a>
+                    </td>                
                 </tr>
+                
             <?php endforeach; ?>
+                
             </tbody>
+            
         </table>
+        
     </div>
 </div>
 
@@ -77,7 +106,9 @@ $inputs = [
     'user_name' => $form->get('user_name'),
     'email'     => $form->get('email'),
     'home_page' => $form->get('home_page'),
+    'text' => $form->get('text'),
 ];
+
 foreach($inputs as $input) {
     $input->setAttribute('class', 'form-control');
 }
@@ -86,6 +117,7 @@ $form->prepare();
 
 <div class="row">
     <div class="col text-center">
+        
 <?= $this->paginationControl($comments,
      'Sliding',
      'application/index/page.phtml', [
@@ -95,64 +127,63 @@ $form->prepare();
 </div>
 
 <div class="panel panel-default mx-3" id="newComment">
-<?= $this->form()->openTag($form); ?>            
+    
+<?= $this->form()->openTag($form); ?> 
+    
     <div class="panel-heading">
         <p class="h2">Add new comment</p>
     </div>
+    
     <div class="panel-body">
         <?= $this->formHidden($form->get('csrf')); ?>  
         <?= $this->formHidden($form->get('parent')->setAttribute('id', 'parent')); ?>  
                 
         <?php foreach($inputs as $input) : ?>
-        <div class="form-group">
-            <?= $this->formLabel($input) ?>
-            <?= $this->formElement($input->setAttribute('id', $input->getAttribute('name'))) ?>
-            <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
-        </div>          
-        <?php endforeach; ?>
         
         <div class="form-group">
-            <?php
-            $input = $form->get('text');
-            $input->setAttributes(['class' =>'form-control', 'contenteditable' => 'true']);
-            ?>            
             <?= $this->formLabel($input) ?>
-            <div role="group" class="border border-secondary rounded px-2 pb-5">
-                <button type="button" class="btn btn-secondary m-1" onClick="strong"><strong>B</strong></button>
-                <button type="button" class="btn btn-secondary m-1" id="make-italic"><i>I</i></button>
-                <button type="button" class="btn btn-secondary m-1" id="make-code">&lt;Code&gt;</button>
-                <button type="button" class="btn btn-secondary m-1" id="make-url">&lt;A&gt;</button>
             <?= $this->formElement($input->setAttribute('id', $input->getAttribute('name'))) ?>
-            </div>
             <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
-        </div>
+        </div> 
+        
+        <?php endforeach; ?>
                 
         <div class="custom-file my-5">
+            
             <?php
             $input = $form->get('file');
             $input->setAttribute('class', 'custom-file-input');
-            ?>            
+            ?>
+            
             <label class="custom-file-label" for="customFile">Choose file</label>
+            
             <?= $this->formElement($input->setAttribute('id', 'customFile')) ?>
             <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+            
         </div>
         
         <div class="form-group">
+            
             <?php
             $input = $form->get('captcha');
             $input->setAttribute('class', 'form-control');
-            ?>            
+            ?>      
+            
             <?= $this->formLabel($input) ?>
             <?= $this->formElement($input->setAttribute('id', 'captcha')) ?>
             <?= $this->formElementErrors()->render($input, ['class' => 'help-block']) ?>
+            
         </div>
  
-
     </div>
+    
     <div class="panel-footer">
+        
         <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
         <?= $this->form()->closeTag(); ?>
+        
     </div>
+    
 </div>
 
 <?php if(isset($error_input)) : ?>

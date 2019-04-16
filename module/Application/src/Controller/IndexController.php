@@ -7,9 +7,11 @@
 
 namespace Application\Controller;
 
+use Application\Form\CommentForm;
 use Application\Model\Comment;
 use Application\Model\CommentTable;
-use Application\Form\CommentForm;
+use Application\Model\Image;
+use Application\Model\Text;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Session\Container;
 use Zend\Paginator\Adapter;
@@ -27,19 +29,24 @@ class IndexController extends AbstractActionController
     
     public function indexAction()
     {
+        // FSUC i know
         $request = $this->getRequest();
         $form = new CommentForm(); 
         $page = ($this->params()->fromRoute('page')) ? $this->params()->fromRoute('page') : 1;
         $container = new Container();
+        
         if(!is_array($container->params)) {
             $container->params = array();
         }
+        
         $container->params['user_name'] = (isset($container->params['user_name'])) ? $container->params['user_name']: 'DESC';
         $container->params['created_at'] = (isset($container->params['created_at'])) ? $container->params['created_at']: 'DESC';
         $container->params['email'] = (isset($container->params['email'])) ? $container->params['email']: 'DESC';
+        
         if(empty($container->params['last'])) {
             $container->params['last'] = 'created_at';
         }
+        
         $comments = $this->table->getHierarchy('0', $container->params['last'], $container->params[$container->params['last']]);
         $paginator = new Paginator(new Adapter\ArrayAdapter($comments));
         $dir = strstr(__DIR__, '/module/Application/src/Controller', true);
@@ -48,25 +55,37 @@ class IndexController extends AbstractActionController
             ->setItemCountPerPage($confArray['per_page'])
             ->setPageRange(ceil(count($comments)/$confArray['per_page']));
         $vm = new ViewModel();
+        
         if ($request->isPost()) {
-            $comment = new Comment();
             $post = array_merge_recursive(
                 $request->getPost()->toArray(),
                 $request->getFiles()->toArray()
             );
-            $form->setInputFilter($comment->getInputFilter());
+            $comment = new Comment();
+            if($post['file']['type'] === 'text/plain') {
+                $text = new Text();
+                $form->setInputFilter($text->getInputFilter());
+            }
+            elseif(false !== strpos($post['file']['type'], 'image')) {
+                $text = new Image();
+                $form->setInputFilter($text->getInputFilter());                
+            }
+            else {
+                $form->setInputFilter($comment->getInputFilter());
+            }
             $form->setData($post);
             if (!$form->isValid()) {
                 $vm->setVariable('error_input', [
-                        'field' => key($form->getMessages()),
-                        'parent' => $request->getPost('parent'),
-                    ]);
+                    'field' => key($form->getMessages()),
+                    'parent' => $request->getPost('parent'),
+                ]);
             }
             else {
                 $comment->exchangeArray($form->getData());
                 $this->table->saveComment($comment);
             }
         }
+        
         $vm->setVariables([
             'paginator' => $paginator,
             'form' => $form,
@@ -83,14 +102,28 @@ class IndexController extends AbstractActionController
         $request = $this->getRequest();
         $comments = $this->table->getHierarchy($this->params()->fromRoute('id'), 'created_at', 'DESC');
         $vm = new ViewModel();
+        
         if ($request->isPost()) {
-            $comment = new Comment();
             $post = array_merge_recursive(
                 $request->getPost()->toArray(),
                 $request->getFiles()->toArray()
             );
-            $form->setInputFilter($comment->getInputFilter());
+            $comment = new Comment();
+            
+            if($post['file']['type'] === 'text/plain') {
+                $text = new Text();
+                $form->setInputFilter($text->getInputFilter());
+            }
+            elseif(false !== strpos($post['file']['type'], 'image')) {
+                $text = new Image();
+                $form->setInputFilter($text->getInputFilter());                
+            }
+            else {
+                $form->setInputFilter($comment->getInputFilter());
+            }
+            
             $form->setData($post);
+            
             if (!$form->isValid()) {
                 $vm->setVariable('error_input', [
                     'field' => key($form->getMessages()),
@@ -98,11 +131,10 @@ class IndexController extends AbstractActionController
                 ]);
             }
             else {
-                $form->setData('file_name', $form->getData()->file['name']);
-                $form->setData('file_type', $form->getData()->file['type']);
                 $comment->exchangeArray($form->getData());
                 $this->table->saveComment($comment);
-            }            
+            }
+            
         }
         $vm->setVariables([
             'parent' => $parent,
