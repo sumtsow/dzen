@@ -13,7 +13,7 @@ class CommentForm extends Form
         parent::__construct('comment');
         $this->setAttributes([
             'method' => 'post',
-            'enctype' => 'multipart/form-data',
+            //'enctype' => 'multipart/form-data',
             ]);
 
         $this->add([

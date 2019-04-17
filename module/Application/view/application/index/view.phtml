@@ -230,6 +230,9 @@ $form->setAttribute('action', '/view/'.$parent->id);
 
 $this->inlineScript()->prependFile($this->basePath('js/modal.js'));
 if(isset($error_input) && $error_input['parent'] == $parent->id) :
+    if($error_input['field'] === 'file') {
+        $error_input['field'] = 'customFile';
+        }    
 ?>
 
 <script>

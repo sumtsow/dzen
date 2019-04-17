@@ -188,7 +188,11 @@ $form->prepare();
     
 </div>
 
-<?php if(isset($error_input)) : ?>
+<?php if(isset($error_input)) :
+        if($error_input['field'] === 'file') {
+            $error_input['field'] = 'customFile';
+        }
+    ?>
 
 <script>
     $('#<?= $error_input["field"]; ?>').focus();

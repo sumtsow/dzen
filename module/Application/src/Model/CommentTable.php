@@ -87,11 +87,11 @@ class CommentTable
             'email'     => $comment->email,
             'home_page' => $comment->home_page,
             'text'      => $comment->text,
-            'file_name' => $comment->file_name,
-            'file_type' => $comment->file_type,
             'parent'    => (int) $comment->parent,
             'created_at'=> $comment->created_at,
         ];
+        $data['file_name'] = !empty($comment->file_name) ? $comment->file_name : null;
+        $data['file_type'] = !empty($comment->file_type) ? $comment->file_type : null;
 
         $id = (int) $comment->id;
 
@@ -100,7 +100,6 @@ class CommentTable
             $this->tableGateway->insert($data);
             $request = new \Zend\Http\PhpEnvironment\Request();
             $path = $request->getServer('DOCUMENT_ROOT').'/files/';
-            //$path = $_SERVER['DOCUMENT_ROOT'].'/files/';
             $dir = ($comment->file_type === 'text/plain') ? 'txt/' : 'img/';
             copy($path.$comment->file_name, $path.$dir.$comment->file_name);
             unlink($path.$comment->file_name);
