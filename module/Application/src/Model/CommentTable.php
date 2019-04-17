@@ -98,7 +98,9 @@ class CommentTable
         if ($id === 0) {
             $data['text'] = htmlentities($data['text']);
             $this->tableGateway->insert($data);
-            $path = $_SERVER['DOCUMENT_ROOT'].'/files/';
+            $request = new \Zend\Http\PhpEnvironment\Request();
+            $path = $request->getServer('DOCUMENT_ROOT').'/files/';
+            //$path = $_SERVER['DOCUMENT_ROOT'].'/files/';
             $dir = ($comment->file_type === 'text/plain') ? 'txt/' : 'img/';
             copy($path.$comment->file_name, $path.$dir.$comment->file_name);
             unlink($path.$comment->file_name);

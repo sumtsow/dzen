@@ -49,8 +49,8 @@ class IndexController extends AbstractActionController
         
         $comments = $this->table->getHierarchy('0', $container->params['last'], $container->params[$container->params['last']]);
         $paginator = new Paginator(new Adapter\ArrayAdapter($comments));
-        $dir = strstr(__DIR__, '/module/Application/src/Controller', true);
-        $confArray = include $dir.'/config/autoload/paginator.global.php';        
+        $confArray = include strstr($this->request->getServer('DOCUMENT_ROOT'), '/public', true).'/config/autoload/paginator.global.php';    
+        //$confArray = include strstr(__DIR__, '/module/Application/src/Controller', true).'/config/autoload/paginator.global.php';
         $paginator->setCurrentPageNumber($page)
             ->setItemCountPerPage($confArray['per_page'])
             ->setPageRange(ceil(count($comments)/$confArray['per_page']));

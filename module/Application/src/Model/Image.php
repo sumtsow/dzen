@@ -44,7 +44,7 @@ class Image extends Comment
                 [
                     'name' => 'FileMimeType',                        
                     'options' => [                            
-                        'mimeType'  => ['image/jpg', 'image/gif', 'image/png']
+                        'mimeType'  => ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']
                     ]
                 ],
                 

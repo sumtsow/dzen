@@ -166,8 +166,8 @@ $form->setAttribute('action', '/view/'.$parent->id);
 <?php endif; ?>
 
         <div class="panel panel-default mx-3" id="newComment">
-            
-            <?= $this->form()->openTag($form); ?>  
+
+<?= $this->form()->openTag($form); ?>  
             
             <div class="panel-heading">
                 <p class="h2">Add new answer</p>
@@ -219,10 +219,11 @@ $form->setAttribute('action', '/view/'.$parent->id);
             <div class="panel-footer">
                 
                 <?= $this->formSubmit($form->get('submit')->setAttribute('class', 'btn btn-success')); ?>
-                <?= $this->form()->closeTag(); ?>
-                
+				
             </div>
-            
+			
+<?= $this->form()->closeTag(); ?>
+                
         </div>   
 
 <?php
