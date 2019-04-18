@@ -3,6 +3,7 @@ namespace Application\Model;
 
 use Application\Model\Comment;
 use Zend\InputFilter\InputFilter;
+<<<<<<< HEAD
 use Zend\Http\PhpEnvironment\Request;
 
     define('MAX_WIDTH', 320);
@@ -11,15 +12,31 @@ use Zend\Http\PhpEnvironment\Request;
 class Image extends Comment
 {
    
+=======
+
+    define("MAX_WIDTH", 320);
+    define("MAX_LENGTH", 240);
+    
+class Image extends Comment
+{
+    
+>>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
     public $file;
 
     private $inputFilter;
   
+<<<<<<< HEAD
     // Возвращает путь к каталогу сохранения файлов изображений
     static function getSaveToDir() 
     {
         $request = new Request();
         return $request->getServer('DOCUMENT_ROOT').'/files/img/';
+=======
+    // Возвращаем путь к каталогу, куда мы сохраняем файлы изображений.
+    static function getSaveToDir() 
+    {
+        return './public/files/img';
+>>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
     }
     
     // Возвращает путь к сохраненному файлу изображения.
@@ -99,6 +116,11 @@ class Image extends Comment
                     'options' => [
                         'minWidth'  => 32,
                         'minHeight' => 24,
+<<<<<<< HEAD
+=======
+                        /*'maxWidth'  => 320,
+                        'maxHeight' => 240,*/
+>>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
                     ]
                 ],
             ],
@@ -116,6 +138,7 @@ class Image extends Comment
 
         // Вычисляем соотношение сторон.
         $aspectRatio = $width/$height;
+<<<<<<< HEAD
         
         if($width > MAX_WIDTH) {
         // Вычисляем получившуюся ширину и высоту.
@@ -126,6 +149,11 @@ class Image extends Comment
             $newHeight = MAX_HEIGHT;
             $newWidth = $newHeight*$aspectRatio;
         }
+=======
+        // Вычисляем получившуюся ширину и высоту.
+        $newWidth = MAX_WIDTH;
+        $newHeight = $newWidth/$aspectRatio;
+>>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
 
         // Получаем информацию об изображении
         $fInfo = self::getImageFileInfo($fPath);
@@ -138,7 +166,12 @@ class Image extends Comment
             $image = imagecreatefromgif($fPath);
         else
             $image = imagecreatefromjpeg($fPath);
+<<<<<<< HEAD
             imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+=======
+        imagecopyresampled($newImage, $image, 0, 0, 0, 0, 
+                $newWidth, $newHeight, $width, $height);
+>>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
 
         // Сохраняем измененное изображение во временное хранилище.
         $tmpFileName = tempnam("/tmp", "FOO");
@@ -154,8 +187,14 @@ class Image extends Comment
         if($width > MAX_WIDTH or $height > MAX_HEIGHT) {
             $tmpPath = self::resizeImage($fPath);
             unlink($fPath);
+<<<<<<< HEAD
             copy($tmpPath, $fPath);
             unlink($tmpPath);            
         }
+=======
+        }
+        copy($tmpPath, $fPath);
+        unlink($tmpPath);
+>>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
     }
 }

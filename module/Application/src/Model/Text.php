@@ -3,7 +3,10 @@ namespace Application\Model;
 
 use Application\Model\Comment;
 use Zend\InputFilter\InputFilter;
+<<<<<<< HEAD
 use Zend\Http\PhpEnvironment\Request;
+=======
+>>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
 
 class Text extends Comment
 {
@@ -63,4 +66,10 @@ class Text extends Comment
         return $this->inputFilter;
     }
     
+<<<<<<< HEAD
+=======
+    static function save($fName) {
+        return true;
+    }
+>>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
 }
