@@ -2,12 +2,7 @@
 namespace Application\Model;
 
 use Application\Model\Comment;
-use DomainException;
-use Zend\InputFilter\FileInput;
 use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
-use Zend\Validator\FileMimeType;
-use Zend\Validator\FileSize;
 
 class Text extends Comment
 {
@@ -58,5 +53,9 @@ class Text extends Comment
         
         $this->inputFilter = $inputFilter;
         return $this->inputFilter;
+    }
+    
+    static function save($fName) {
+        return true;
     }
 }
