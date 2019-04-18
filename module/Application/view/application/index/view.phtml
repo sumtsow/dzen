@@ -16,7 +16,7 @@
             if(false !== strpos($parent->file['type'], 'image')) : ?>
                 
                 <a class="gallery" rel="alternate" data-fancybox="alternate" href="<?= '/files/img/'.$this->escapeHtml($parent->file['name']); ?>">
-                    <img class="img-fluid float-left align-top mx-3 my-0" src="<?= '/files/img/'.$this->escapeHtml($parent->file['name']); ?>" alt="Comment image">
+                    <img class="img-fluid mh-100 float-left align-top mx-3 my-0"> src="<?= '/files/img/'.$this->escapeHtml($parent->file['name']); ?>" alt="Comment image">
                 </a>
                 
             <?php elseif(false !== strpos($parent->file['type'], 'text')) : ?>
