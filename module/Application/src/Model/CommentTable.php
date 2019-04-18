@@ -7,10 +7,6 @@ use Zend\Db\Sql\Select;
 use Zend\Db\TableGateway\TableGatewayInterface;
 use Application\Model\Comment;
 use Application\Model\Image;
-<<<<<<< HEAD
-=======
-use Application\Model\Text;
->>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
 
 class CommentTable
 {
@@ -104,22 +100,9 @@ class CommentTable
             $data['text'] = htmlentities($data['text']);
             $this->tableGateway->insert($data);
             if(!empty($data['file_name'])) {
-<<<<<<< HEAD
                 if($data['file_type'] !== 'text/plain') {
                     Image::save($data['file_name']);
-=======
-                /*$request = new \Zend\Http\PhpEnvironment\Request();
-                $path = $request->getServer('DOCUMENT_ROOT').'/files/';
-                $dir = ($comment->file_type === 'text/plain') ? 'txt/' : 'img/';
-                copy($path.$comment->file_name, $path.$dir.$comment->file_name);
-                unlink($path.$comment->file_name);*/
-                if($data['file_type'] === 'text/plain') {
-                    Text::save($data['file_name']);
                     }
-                else {
-                    Image::save($data['file_name']);   
->>>>>>> 523f37ef6f78c8eb78f8fa5b409039b38b86ce9b
-                }
             }
             return;
         }
