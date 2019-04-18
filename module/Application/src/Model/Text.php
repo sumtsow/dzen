@@ -2,12 +2,8 @@
 namespace Application\Model;
 
 use Application\Model\Comment;
-use DomainException;
-use Zend\InputFilter\FileInput;
 use Zend\InputFilter\InputFilter;
-use Zend\InputFilter\InputFilterInterface;
-use Zend\Validator\FileMimeType;
-use Zend\Validator\FileSize;
+use Zend\Http\PhpEnvironment\Request;
 
 class Text extends Comment
 {
@@ -15,6 +11,13 @@ class Text extends Comment
 
     private $inputFilter;
   
+    // Возвращает путь к каталогу сохранения файлов
+    static function getSaveToDir() 
+    {
+        $request = new Request();
+        return $request->getServer('DOCUMENT_ROOT').'/files/txt/';
+    }
+    
     public function getInputFilter()
     {
         if ($this->inputFilter) {
@@ -31,7 +34,7 @@ class Text extends Comment
                 [
                     'name' => 'FileRenameUpload',
                     'options' => [  
-                        'target'=>'./public/files',
+                        'target'=>self::getSaveToDir(),
                         'useUploadName'=>true,
                         'useUploadExtension'=>true,
                         'overwrite'=>true,
@@ -59,4 +62,5 @@ class Text extends Comment
         $this->inputFilter = $inputFilter;
         return $this->inputFilter;
     }
+    
 }

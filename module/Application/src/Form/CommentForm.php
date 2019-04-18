@@ -13,7 +13,6 @@ class CommentForm extends Form
         parent::__construct('comment');
         $this->setAttributes([
             'method' => 'post',
-            //'enctype' => 'multipart/form-data',
             ]);
 
         $this->add([
@@ -87,15 +86,6 @@ class CommentForm extends Form
             'name' => 'parent',
             'type' => 'hidden',
         ]);  
-        
-        /*$this->add([
-            'name' => 'created_at',
-            'type' => Element\DateTime::class,
-            'options' => [
-                'label' => 'Date/Time',
-                'format' => 'Y-m-d H:i:s',
-            ],
-        ]);*/
         
         $this->add([
             'name' => 'captcha',
