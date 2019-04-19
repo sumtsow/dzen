@@ -92,7 +92,21 @@ class CommentForm extends Form
             'type' => 'Zend\Form\Element\Captcha',
             'options' => [
                 'label' => 'Captcha',
-                'captcha' => new Captcha\Dumb(),
+                //'captcha' => new Captcha\Dumb(),
+                'captcha' => new Captcha\Image([
+                    'imgDir' => 'public/img/captcha',
+                    'suffix' => '.png',
+                    'imgUrl' => '/img/captcha/',
+                    'imgAlt' => 'CAPTCHA Image',
+                    'font'   => './public/fonts/thorne_shaded.ttf',
+                    'fsize'  => 24,
+                    'width'  => 350,
+                    'height' => 100,
+                    'expiration' => 600, 
+                    'dotNoiseLevel' => 40,
+                    'lineNoiseLevel' => 3
+                ]
+                        ),
             ],
         ]); 
         
