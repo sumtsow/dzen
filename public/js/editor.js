@@ -8,6 +8,6 @@ tinymce.init({
         format: {title: 'Format', items: 'bold italic'},
     },
     quickbars_insert_toolbar: 'quickimage quicktable',
-    valid_elements : 'a[href|target=_blank],strong/b,i,code,br',
+    valid_elements : 'a[href|target=_blank],strong/b,i,code,p,br',
     contextmenu: "link image imagetools table spellchecker"
 });

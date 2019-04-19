@@ -3,6 +3,7 @@ namespace Application\Model;
 
 use Application\Model\Comment;
 use Zend\InputFilter\InputFilter;
+use Zend\Http\PhpEnvironment\Request;
 
 class Text extends Comment
 {

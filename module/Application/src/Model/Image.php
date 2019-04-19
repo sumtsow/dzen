@@ -154,8 +154,8 @@ class Image extends Comment
         if($width > MAX_WIDTH or $height > MAX_HEIGHT) {
             $tmpPath = self::resizeImage($fPath);
             unlink($fPath);
+            copy($tmpPath, $fPath);
+            unlink($tmpPath);            
         }
-        copy($tmpPath, $fPath);
-        unlink($tmpPath);
     }
 }
