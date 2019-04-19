@@ -92,7 +92,6 @@ class CommentForm extends Form
             'type' => 'Zend\Form\Element\Captcha',
             'options' => [
                 'label' => 'Captcha',
-                //'captcha' => new Captcha\Dumb(),
                 'captcha' => new Captcha\Image([
                     'imgDir' => 'public/img/captcha',
                     'suffix' => '.png',
